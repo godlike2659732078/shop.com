@@ -18,6 +18,9 @@ export
         })
         instance(config).then(res => {
             resolve(res.data)
+            if(!res){
+                console.log(11111)
+            }
             //token响应,登录超时判断
             if (store.state.accessToken == "" || store.state.accessToken == null || store.state.accessToken.length == 0||res.data.code==4030) {
                 router.push({

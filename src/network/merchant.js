@@ -398,3 +398,146 @@ export function findAllCmtShops(obj) {
         params: obj
     })
 }
+// 添加CMT商家/shop/updateCmtShop
+export function addCmtShop(obj) {
+    return request({
+        method: "post",
+        url: '/shop/addCmtShop',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉取cmt单条信息
+export function findCmtShopById(obj) {
+    return request({
+        method: "get",
+        url: '/shop/findCmtShopById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 编辑CMT商家
+export function updateCmtShop(obj) {
+    return request({
+        method: "post",
+        url: '/shop/updateCmtShop',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 删除CMT商家
+export function delCMTshop(obj) {
+    return request({
+        method: "post",
+        url: '/shop/delCmtShopById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 获取直播间列表
+export function getLives(obj) {
+    return request({
+        method: "get",
+        url: '/applet/findDirectBroadcastingRoom',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// /获取导入商品列表
+export function getLivegoods(obj) {
+    return request({
+        method: "get",
+        url: '/applet/findDirectBroadcastingRoomGoods',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// /导入商品
+export function importLivegoods(obj) {
+    return request({
+        method: "get",
+        url: '/applet/directBroadcastingRoomAddGood',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// /获取直播间图片media
+export function getMedia(obj) {
+    return request({
+        method: "get",
+        url: '/official/upload',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 创建直播间
+export function addLive(obj) {
+    return request({
+        method: "post",
+        url: '/applet/addDirectBroadcastingRoom',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 编辑商品价格
+export function changeGoodsPrice(obj) {
+    return request({
+        method: "post",
+        url: '/applet/updateDirectBroadcastingRoomGoods',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 删除已审核直播商品
+export function delLiveGoods(obj) {
+    return request({
+        method: "post",
+        url: '/applet/delDirectBroadcastingRoomGoods',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 撤回正在审核商品
+export function hoveLiveGoods(obj) {
+    return request({
+        method: "post",
+        url: '/applet/appletAuditIdByGoodsId',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 添加商品并提审
+export function addLiveGoods(obj) {
+    return request({
+        method: "post",
+        url: '/applet/appletAddGood',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}

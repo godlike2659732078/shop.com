@@ -144,9 +144,7 @@ export default {
     return {
       username: "",
       phone: "",
-      address: "",
       user_addTime: "",
-      user_loginTime: "",
       tableData: [],
       currentPage4: 1,
       pages: null,

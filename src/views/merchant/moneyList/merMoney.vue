@@ -28,7 +28,7 @@
             width="150"
             :show-overflow-tooltip="true"
           ></el-table-column>
-          <el-table-column align="center" prop="name" label="店铺名称"></el-table-column>
+          <el-table-column align="center" prop="name" label="店铺名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" prop="amount" label="总资金" width="100"></el-table-column>
           <el-table-column
             align="center"
@@ -39,8 +39,8 @@
           ></el-table-column>
           <el-table-column align="center" prop="frozenAmt" label="冻结资金" width="160"></el-table-column>
           <el-table-column align="center" prop="ensureAmt" label="保证金" width="100"></el-table-column>
-          <el-table-column align="center" prop="integralFrozenNum" label="冻结积分" width="180"></el-table-column>
-          <el-table-column align="center" prop="integralUseNum" label="可用积分" width="180"></el-table-column>
+          <el-table-column align="center" prop="integralFrozenNum" label="冻结积分" width="150"></el-table-column>
+          <el-table-column align="center" prop="integralUseNum" label="可用积分" width="150"></el-table-column>
           <el-table-column align="center" label="操作" fixed="right" width="300px">
             <template slot-scope="scope">
               <el-button

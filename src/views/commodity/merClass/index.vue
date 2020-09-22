@@ -4,7 +4,6 @@
     <p class="table_title">CMT商家列表</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
-      
       <!-- 用户信息列表 -->
       <div class="userList">
         <div class="userList_head">
@@ -24,29 +23,61 @@
           class="userList_table"
         >
           <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
-          <el-table-column align="center" label="头像" width="80">
+          <el-table-column align="center" label="缩略图" width="100">
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
-                v-if="scope.row.photo"
-                :src="scope.row.photo"
+                v-if="scope.row.image"
+                :src="scope.row.image"
                 style="margin-left:10px;display:block;width:30px;"
                 alt
               />
             </template>
           </el-table-column>
-         
-          <el-table-column align="center" prop="name" label="店铺名称" width="320"  :show-overflow-tooltip="true"></el-table-column>
+
+          <el-table-column align="center" prop="name" label="分类名称" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column align="center" prop="sort" label="排序" width="80"></el-table-column>
+
+          <el-table-column align="center" prop="status" label="展示在首页" width="100">
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.isHome==1"
+                type="warning"
+                size="mini"
+                style="background-color:#1e9fff;border:none;border-radius:2px;margin-right:10px"
+              >展示</el-button>
+              <el-button
+                v-else
+                type="warning"
+                size="mini"
+                style="background-color:#ffb800;border:none;border-radius:2px;margin-right:10px"
+              >不展示</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="status" label="是否推荐" width="100">
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.isRecommend==1"
+                type="warning"
+                size="mini"
+                style="background-color:#1e9fff;border:none;border-radius:2px;margin-right:10px"
+              >推荐</el-button>
+              <el-button
+                v-else
+                type="warning"
+                size="mini"
+                style="background-color:#ffb800;border:none;border-radius:2px;margin-right:10px"
+              >不推荐</el-button>
+            </template>
+          </el-table-column>
           <el-table-column
             align="center"
-            prop="phone"
-            label="联系电话"
-            width="120"
-           
+            prop="createTime"
+            label="操作时间"
+            fixed="right"
+            width="180px"
           ></el-table-column>
-          <el-table-column align="center" prop="address" label="公司地址"  :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="createTime" label="添加时间" width="180"></el-table-column>
-          <el-table-column align="center" label="操作" fixed="right" width="230px">
+          <el-table-column align="center" label="操作" fixed="right" width="160px">
             <template slot-scope="scope">
               <el-button
                 type="warning"
@@ -82,7 +113,7 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { findAllCmtShops, noShow,delCMTshop } from "../../../network/merchant";
+import { getmerClass,delShopClass } from "../../../network/commodity";
 export default {
   components: {},
   data() {
@@ -93,36 +124,11 @@ export default {
       multipleSelection: [],
       page: 1,
       limit: 10,
-      editForm: {
-      },
+      editForm: {},
       labelPosition: "left",
       edit: false,
       index: "",
     };
-  },
-  watch: {
-    page() {
-      let obj = {
-      page: this.page,
-      limit: this.limit,
-    };
-    findAllCmtShops(obj).then((res) => {
-      console.log(res);
-      this.tableData = res.data;
-      this.pages = res.count;
-    });
-    },
-    limit() {
-      let obj = {
-      page: this.page,
-      limit: this.limit,
-    };
-    findAllCmtShops(obj).then((res) => {
-      console.log(res);
-      this.tableData = res.data;
-      this.pages = res.count;
-    });
-    },
   },
   methods: {
     // 获取列表
@@ -131,8 +137,8 @@ export default {
         page: this.page,
         limit: this.limit,
       };
-      findAllCmtShops(obj).then((res) => {
-        console.log(res);
+      getmerClass(obj).then((res) => {
+        //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -140,17 +146,18 @@ export default {
 
     // 点击编辑事件
     eidt(res) {
+      console.log(res)
       this.$router.push({
-        path: "/merchant/cmtShop/form",
+        path: "/commodity/merClass/edit",
         query: {
           id: res.id,
         },
       });
     },
-   
+
     // 删除单个商家
     delOne(res) {
-       this.$confirm("是否删除该商家？", "提示", {
+      this.$confirm("是否删除该分类？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -159,8 +166,8 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delCMTshop(obj).then((res) => {
-            // console.log(res);
+          delShopClass(obj).then((res) => {
+            // //console.log(res);
             this.$message({
               type: "success",
               message: res.msg,
@@ -184,7 +191,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/merchant/cmtShop/add" });
+      this.$router.push({ path: "/commodity/merClass/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -193,11 +200,10 @@ export default {
 
   created() {
     let obj = {
-      page: this.page,
-      limit: this.limit,
+      parentId: 0,
     };
-    findAllCmtShops(obj).then((res) => {
-      console.log(res);
+    getmerClass(obj).then((res) => {
+      //console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });
@@ -288,5 +294,4 @@ export default {
 .user_look {
   border: none;
 }
-
 </style>

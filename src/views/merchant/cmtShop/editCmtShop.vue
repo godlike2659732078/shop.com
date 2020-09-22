@@ -1,200 +1,147 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">修改CMT商家</p>
+    <p class="table_title">添加CMT商家</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 编辑用户信息列表 -->
       <el-form
         :label-position="labelPosition"
-        :rules="rules"
+        label-width="100px"
+        style="padding:0px 60px"
         ref="editForm"
-        label-width="80px"
         :model="editForm"
+        :rules="rules"
         :index="index"
       >
-        <p class="form_title">商家账号资料</p>
-        <div style="display:flex">
-          <el-form-item prop="account">
-            账号：
-            <el-input
-              v-model="editForm.account"
-              style="width:200px;margin-right:10px"
-              placeholder="请输入商家登录账号"
-              autocomplete="off"
-              disabled
-            ></el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            登录密码：
-            <el-input
-              v-model="editForm.password"
-              style="width:200px;margin-right:10px"
-              placeholder="请输入商家登录密码"
-              autocomplete="off"
-            ></el-input>
-            <span style="color:#aaa">请填写6到12位密码</span>
-          </el-form-item>
-        </div>
-
-        <p class="form_title">设置商家基础参数</p>
-        <div style="display:flex">
-          <el-form-item prop="name">
-            店铺名称：
-            <el-input
-              v-model="editForm.name"
-              style="width:200px;margin-right:10px "
-              placeholder="请输入店铺名称"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-          <el-form-item prop="phone">
-            联系电话：
-            <el-input
-              v-model="editForm.phone"
-              style="width:200px; margin-right:10px ;"
-              placeholder="请输入联系电话"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-        </div>
-
-        <el-form-item prop="sort">
-          商家排序：
-          <el-input v-model="editForm.sort" style="width:200px;margin-right:10px ;" :value="0"></el-input>
-          <span style="color:#aaa">0~100 数字越小优先级越高</span>
-        </el-form-item>
-        <el-form-item label="店铺头像">
-          <el-upload
-            class="avatar-uploader"
-            action="http://res.chainmall.pro/img/saveImage/image"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-          >
-            <img v-if="editForm.headImage" :src="editForm.headImage" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="店铺背景">
-          <el-upload
-            class="avatar-uploader"
-            action="http://res.chainmall.pro/img/saveImage/image"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess_bg"
-          >
-            <img
-              v-if="editForm.headImage"
-              style
-              :src="editForm.backgroundImg"
-              class="avatar_shopBg"
-            />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
-        <p class="form_title">设置商家资金参数</p>
-        <div style="display:flex">
-          <el-form-item prop="ensureAmt">
-            商家保证金：
-            <el-input
-              v-model="editForm.ensureAmt"
-              style="width:200px;margin-right:10px ;margin-bottom:10px"
-              placeholder="请输入商家保证金"
-              autocomplete="off"
-            ></el-input>
-            <span style="color:#aaa;margin-right:20px">万元</span>
-          </el-form-item>
-          <el-form-item prop="ensureMax">
-            最高阀值：
-            <el-input
-              v-model="editForm.ensureMax"
-              style="width:200px; margin-right:10px;margin-bottom:10px ;"
-              placeholder="请输入商家保证金最大值"
-              autocomplete="off"
-            ></el-input>
-            <span style="color:#aaa;margin-right:20px">万元</span>
-          </el-form-item>
-        </div>
-        <div style="display:flex">
-          <el-form-item prop="ensureMin">
-            最低阀值：
-            <el-input
-              v-model="editForm.ensureMin"
-              style="width:200px;margin-right:10px;margin-bottom:10px ;"
-              placeholder="请输入商家保证金最小值"
-              :value="0"
-              autocomplete="off"
-            ></el-input>
-            <span style="color:#aaa;margin-right:20px">万元</span>
-          </el-form-item>
-          <el-form-item prop="ensure">
-            保证金比例：
-            <el-input
-              v-model="editForm.ensure"
-              style="width:200px; margin-right:10px;margin-bottom:10px ;"
-              placeholder="请输入商家保证金比例"
-              autocomplete="off"
-            ></el-input>
-            <span style="color:#aaa;margin-right:20px">% （保证金比例为商家冻结资金解冻占比）</span>
-          </el-form-item>
-        </div>
-
-        <el-form-item prop="fee">
-          服务费：
+        <el-form-item label="商家名称：" prop="name">
           <el-input
-            v-model="editForm.fee"
-            style="width:200px;margin-right:10px;margin-bottom:10px ;"
-            placeholder="请输入需要支付的服务费"
-            autocomplete="off"
-            :value="0"
+            v-model="editForm.name"
+            style="width:400px;margin-right:10px "
+            placeholder="请输入商家名称"
           ></el-input>
-          <span style="color:#aaa;margin-right:20px">% （商家卖出商品向平台支付的服务费）</span>
+        </el-form-item>
+        <el-form-item label="联系电话：" prop="phone">
+          <el-input
+            v-model="editForm.phone"
+            style="width:200px;margin-right:10px "
+            placeholder="请输入联系电话"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="商家头像" required>
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :show-file-list="false"
+            :on-success="handlephoto"
+          >
+            <img v-if="editForm.photo" :src="editForm.photo" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="展示图1">
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :show-file-list="false"
+            :on-success="handlephotoOne"
+          >
+            <img v-if="editForm.photoOne" :src="editForm.photoOne" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="展示图2">
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :show-file-list="false"
+            :on-success="handlephotoTwo"
+          >
+            <img v-if="editForm.photoTwo" :src="editForm.photoTwo" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="展示图3">
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :show-file-list="false"
+            :on-success="handlephotoThree"
+          >
+            <img v-if="editForm.photoThree" :src="editForm.photoThree" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="所在城市" prop="city">
+          <el-input
+            v-model="editForm.city"
+            style="width:200px;margin-right:10px "
+            placeholder="请输入所在城市"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商家地址：" prop="address">
+          <el-input
+            v-model="editForm.address"
+            type="textarea"
+            style="width:400px;margin-right:10px "
+            placeholder="请输入商家地址"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商家坐标：" prop="coordinates">
+          <el-input
+            v-model="editForm.coordinates"
+            style="width:300px;margin-right:10px "
+            placeholder="请输入商家坐标"
+            disabled
+          ></el-input>
+          <el-button type="primary" size="small" @click="chooseMap(editForm.id)">地图上选择</el-button>
+        </el-form-item>
+        <el-form-item label="内容：">
+           <tinymce ref="editor" v-model="editForm.particulars" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('editForm')">立即提交</el-button>
+          <el-button type="primary" @click="subChange('editForm',editForm.id)">立即提交</el-button>
           <el-button style="margin-left:160px" @click="resetForm('editForm')">重置</el-button>
         </el-form-item>
       </el-form>
+      <!-- 备注信息弹窗 -->
+      <el-dialog width="600px" style="height:800px" title="选择地点" :visible.sync="showMap">
+        <div id="allMap"></div>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import { TimeSelect } from "element-ui";
-import {
-  getmerchantOne,
-  getmerchantAcount,
-  updateMerchant,
-} from "../../../network/merchant";
+import tinymce from "../../../components/tinymce/tinymce";
+import { updateCmtShop, findCmtShopById } from "../../../network/merchant";
 export default {
-  components: {},
+  components: { tinymce },
   data() {
     return {
+      defaultMsg: "", // 富文本默认提示信息
+      showMap: false,
       editForm: {
-        headImage:
-          "adm/2019/03/16/30bbdbf89001863348e4c8d8d7801d462019-03-16-08-48-22.png",
-        backgroundImg:
-          "adm/2019/03/16/f257ae6b19b68a7dbcac28319eb5afe02019-03-16-08-49-49.png",
-        account: "",
-        phone: "",
-        password: "",
         name: "",
-        sort: "",
-        ensureAmt: "",
-        ensureMax: "",
-        ensureMin: "",
-        ensure: "",
-        fee: "",
+        phone: "",
+        photo: "",
+        photoOne: "",
+        photoTwo: "",
+        photoThree: "",
+        city: "",
+        address: "",
+        coordinates: "",
+        particulars:"",
+        id:null,
       },
       rules: {
-        account: [{ required: true, message: "必填项不能为空", tigger: "" }],
-        fee: [{ required: true, message: "必填项不能为空" }],
-        name: [{ required: true, message: "必填项不能为空" }],
-        sort: [{ required: true, message: "必填项不能为空" }],
+        name: [{ required: true, message: "商家名称不能为空" }],
         phone: [{ required: true, message: "必填项不能为空" }],
-        ensureAmt: [{ required: true, message: "必填项不能为空" }],
-        ensureMax: [{ required: true, message: "必填项不能为空" }],
-        ensureMin: [{ required: true, message: "必填项不能为空" }],
-        ensure: [{ required: true, message: "必填项不能为空" }],
+        city: [{ required: true, message: "必填项不能为空" }],
+        address: [{ required: true, message: "必填项不能为空" }],
+        coordinates: [{ required: true, message: "必填项不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -202,93 +149,112 @@ export default {
   },
 
   methods: {
+    //   // 鼠标单击的事件
+    // 	onClick (e, editor) {
+    // 		console.log('Element clicked')
+    // 		console.log(e)
+    // 		console.log(editor)
+    // 	},
     // 上传商家头像
-    handleAvatarSuccess(res, file) {
-      this.editForm.headImage = "http://res.chainmall.pro/" + res.data;
+    handlephoto(res, file) {
+      this.editForm.photo = "http://res.chainmall.pro/" + res.data;
       console.log(res);
       console.log(file);
     },
-    // 上传商家背景图
-    handleAvatarSuccess_bg(res, file) {
-      this.editForm.backgroundImg = "http://res.chainmall.pro/" + res.data;
+    handlephotoOne(res, file) {
+      this.editForm.photoOne = "http://res.chainmall.pro/" + res.data;
       console.log(res);
       console.log(file);
     },
-    // 提交编辑内容事件
-    submitForm(ruleForm) {
-      this.$refs[ruleForm].validate((valid) => {
+    handlephotoTwo(res, file) {
+      this.editForm.photoTwo = "http://res.chainmall.pro/" + res.data;
+      console.log(res);
+      console.log(file);
+    },
+    handlephotoThree(res, file) {
+      this.editForm.photoThree = "http://res.chainmall.pro/" + res.data;
+      console.log(res);
+      console.log(file);
+    },
+    chooseMap() {
+      // if (this.editForm.address != "") {
+      let offa = this.editForm.address;
+      if (offa != "") {
+        this.showMap = true;
+        setTimeout(() => {
+          let map = new BMap.Map("allMap"); // 创建Map实例
+          let a = this.editForm;
+          // 百度地图API功能
+          map.centerAndZoom(new BMap.Point(112.460321, 34.623307), 15); // 初始化地图,设置中心点坐标和地图级别
+          //添加地图类型控件
+          //单击获取点击的经纬度
+          map.addEventListener("click", function (e) {
+            a.coordinates = e.point.lng + "," + e.point.lat;
+            map.clearOverlays();
+            // alert(e.point.lng + "," + e.point.lat);
+            let x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+            let x = e.point.lng - 0.0065;
+            let y = e.point.lat - 0.006;
+            let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+            let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+            let lngs = z * Math.cos(theta);
+            let lats = z * Math.sin(theta);
+            let point = new BMap.Point(e.point.lng, e.point.lat);
+            let marker = new BMap.Marker(point); // 创建标注
+            map.addOverlay(marker);
+            // $('input[name="coordinates"]').val(e.point.lng + "," + e.point.lat);
+          });
+          map.addControl(
+            new BMap.MapTypeControl({
+              mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP],
+            })
+          );
+          map.setCurrentCity("洛阳"); // 设置地图显示的城市 此项是必须设置的
+          map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+          var size = new BMap.Size(10, 20);
+          map.addControl(
+            new BMap.CityListControl({
+              anchor: BMAP_ANCHOR_TOP_LEFT,
+              offset: size,
+            })
+          );
+
+          let local = new BMap.LocalSearch(map, {
+            renderOptions: { map: map },
+          });
+          local.search(offa);
+        }, 500);
+      } else {
+        this.$message.error("请输入地址");
+      }
+
+      // }
+    },
+    subChange(formName, res) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-          let addForm = "";
-          addForm = this.editForm;
-          let amt = parseInt(addForm.ensureAmt);
-          let max = parseInt(addForm.ensureMax);
-          let min = parseInt(addForm.ensureMin);
-          let ensure = parseInt(addForm.ensure);
-          let fee = parseInt(addForm.fee);
-
-          if (amt.toString().length >= 5) {
-            this.$message.error("保证金金额位数最大为四位");
-
+          if (this.editForm.photo == "") {
+            this.$message.error("请上传商家头像缩略图！");
             return false;
           }
-
-          if (max.toString().length >= 5) {
-            this.$message.error("最高阀值位数最大为四位");
-
-            return false;
-          }
-
-          if (min.toString().length >= 5) {
-            this.$message.error("最低阀值位数最大为四位");
-            return false;
-          }
-
-          if (amt > max) {
-            this.$message.error("最高阀值需大于商家保证金金额");
-
-            return false;
-          }
-
-          if (amt < min) {
-            this.$message.error("最低阀值需小于商家保证金金额");
-
-            return false;
-          }
-
-          if (ensure > 100) {
-            this.$message.error("保证金比例不能大于100");
-            return false;
-          }
-
-          if (fee > 100) {
-            this.$message.error("平台服务费比例不能大于100");
-            return false;
-          }
-          let headImage = this.editForm.headImage.slice(25);
-          addForm.headImage = headImage;
-          let backgroundImg = this.editForm.backgroundImg.slice(25);
-          addForm.backgroundImg = backgroundImg;
-          addForm.ensureAmt = amt * 10000;
-          addForm.ensureMax = max * 10000;
-          addForm.ensureMin = min * 10000;
-          addForm.ensure = ensure / 100;
-          addForm.fee = fee / 100;
-          console.log(addForm);
-          let obj = this.$qs.stringify(addForm);
-          updateMerchant(obj).then((res) => {
+          this.editForm.photo = this.editForm.photo.slice(25);
+          this.editForm.photoOne = this.editForm.photoOne.slice(25);
+          this.editForm.photoTwo = this.editForm.photoTwo.slice(25);
+          this.editForm.photoThree = this.editForm.photoThree.slice(25);
+          let obj = this.$qs.stringify(this.editForm);
+          updateCmtShop(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
-                message: res.msg,
                 type: "success",
+                message: res.msg,
               });
-              this.$router.push({ path: "/merchant/merchantList" });
-            } else {
-              this.$message.error("操作失败");
+              this.$router.push({ path: "/merchant/cmtShop" });
             }
           });
         } else {
-          this.$message.error("操作失败");
+          this.$message.error("请检查必填项是否为空");
           return false;
         }
       });
@@ -301,36 +267,25 @@ export default {
     },
   },
   created() {
-    console.log(this.$route.query.sId);
+    this.editForm.id=this.$route.query.id;
     let obj = {
-      uId: this.$route.query.sId,
+      id: this.$route.query.id,
     };
-    console.log(obj);
-    getmerchantOne(obj).then((res) => {
+    findCmtShopById(obj).then((res) => {
       console.log(res);
-      if (res.code == 0) {
-        this.editForm = {
-          name: res.data.name,
-          phone: res.data.phone,
-          sort: res.data.sort,
-          shopTag: res.data.shopTag,
-          account: res.data.account,
-          headImage: res.data.headImage,
-          backgroundImg: res.data.backgroundImg,
-          shopClass: res.data.shopClass, // 商家分类
-          ensureAmt: res.data.ensureAmt / 10000, // 保证金
-          ensureMax: res.data.ensureMax / 10000, // 最大
-          ensureMin: res.data.ensureMin / 10000, // 最小
-          ensure: res.data.ensure * 100, // 保证金比例
-          fee: res.data.fee * 100, // 服务费
-          sId: res.data.sId,
-        };
-      }
+      this.editForm=res.data
     });
   },
 };
 </script>
 <style lang="less">
+#allMap {
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  margin: 0px auto;
+  font-family: "微软雅黑";
+}
 .table_title {
   display: block;
   font-size: 14px;
@@ -357,6 +312,9 @@ export default {
 .el-button--mini,
 .el-button--mini.is-round {
   padding: 5px 5px;
+}
+.el-form-item__label {
+  padding: 0px;
 }
 .el-table td,
 .el-table th.is-leaf {
@@ -408,19 +366,14 @@ export default {
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
   text-align: center;
 }
 .avatar {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-.avatar_shopBg {
-  width: 100px;
-  height: 48px;
+  width: 120px;
+  height: 120px;
   display: block;
 }
 </style>

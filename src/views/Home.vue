@@ -455,4 +455,14 @@ export default {
 .fa {
   margin-right: 14px;
 }
+input[disabled],input:disabled,input.disabled{  
+    color: #aaa;  
+    -webkit-text-fill-color:#aaa;  
+    -webkit-opacity:1;  
+    opacity: 1;  
+} 
+.el-submenu .el-menu-item{
+  height: 40px;
+  line-height: 40px;
+}
 </style>

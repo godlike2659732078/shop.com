@@ -5,23 +5,29 @@
     <!-- 搜索列表 -->
     <div class="userList_content">
       <div class="userserch_block">
-        用户名：
-        <el-input style="width:182px;margin-right:10px" v-model="username" clearable></el-input>手机号：
-        <el-input style="width:182px;margin-right:10px" v-model="phone" clearable></el-input>钱包地址：
-        <el-input style="width:400px;margin-right:10px" v-model="address" clearable></el-input>创建时间：
-        <el-date-picker
-          style="width:300px;margin-right:10px"
-          v-model="user_addTime"
-          type="daterange"
-          value-format="yyyy-MM-dd"
-        ></el-date-picker>登录时间：
-        <el-date-picker
-          style="width:320px;margin-right:10px"
-          v-model="user_loginTime"
-          type="daterange"
-          value-format="yyyy-MM-dd"
-        ></el-date-picker>
-        <el-button type="primary" size="small" @click="serchData">搜索</el-button>
+        <div>
+          用户名：
+          <el-input style="width:182px;margin-right:10px" v-model="username" clearable></el-input>手机号：
+          <el-input style="width:182px;margin-right:10px" v-model="phone" clearable></el-input>钱包地址：
+          <el-input style="width:400px;margin-right:10px" v-model="address" clearable></el-input>
+        </div>
+
+        <div style="margin-top:10px">
+          创建时间：
+          <el-date-picker
+            style="width:300px;margin-right:10px"
+            v-model="user_addTime"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+          ></el-date-picker>登录时间：
+          <el-date-picker
+            style="width:320px;margin-right:10px"
+            v-model="user_loginTime"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+          ></el-date-picker>
+          <el-button type="primary" size="small" @click="serchData">搜索</el-button>
+        </div>
       </div>
       <!-- 用户信息列表 -->
       <div class="userList">
@@ -521,7 +527,7 @@ export default {
             message: res.msg,
             type: "success",
           });
-         this.serchData()
+          this.serchData();
         } else {
         }
       });

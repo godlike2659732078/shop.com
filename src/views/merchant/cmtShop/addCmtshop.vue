@@ -7,19 +7,21 @@
       <!-- 编辑用户信息列表 -->
       <el-form
         :label-position="labelPosition"
-        label-width="80px"
+        label-width="100px"
         style="padding:0px 60px"
-        :value="editForm"
+        ref="editForm"
+        :model="editForm"
+        :rules="rules"
         :index="index"
       >
-        <el-form-item label="商家名称：">
+        <el-form-item label="商家名称：" prop="name">
           <el-input
             v-model="editForm.name"
             style="width:400px;margin-right:10px "
             placeholder="请输入商家名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：">
+        <el-form-item label="联系电话：" prop="phone">
           <el-input
             v-model="editForm.phone"
             style="width:200px;margin-right:10px "
@@ -27,7 +29,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="商家头像">
+        <el-form-item label="商家头像" required>
           <el-upload
             class="avatar-uploader"
             action="http://res.chainmall.pro/img/saveImage/image"
@@ -71,14 +73,14 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="所在城市">
+        <el-form-item label="所在城市" prop="city">
           <el-input
             v-model="editForm.city"
             style="width:200px;margin-right:10px "
             placeholder="请输入所在城市"
           ></el-input>
         </el-form-item>
-        <el-form-item label="商家地址：">
+        <el-form-item label="商家地址：" prop="address">
           <el-input
             v-model="editForm.address"
             type="textarea"
@@ -86,23 +88,27 @@
             placeholder="请输入商家地址"
           ></el-input>
         </el-form-item>
-        <el-form-item label="商家坐标：">
+        <el-form-item label="商家坐标：" prop="coordinates">
           <el-input
             v-model="editForm.coordinates"
-            style="width:200px;margin-right:10px "
+            style="width:300px;margin-right:10px "
             placeholder="请输入商家坐标"
+            disabled
           ></el-input>
           <el-button type="primary" size="small" @click="chooseMap(editForm.id)">地图上选择</el-button>
         </el-form-item>
-        <el-form-item label="商家坐标：">
-          <tinymce ref="editor" v-model="defaultMsg" />
+        <el-form-item label="内容：">
+          <tinymce ref="editor" v-model="editForm.particulars" @onClick="onClick" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="subChange(editForm.id)">立即提交</el-button>
-          <el-button style="margin-left:160px" @click="edit= false">取消</el-button>
+          <el-button type="primary" @click="subChange('editForm',editForm.id)">立即提交</el-button>
+          <el-button style="margin-left:160px" @click="resetForm('editForm')">重置</el-button>
         </el-form-item>
       </el-form>
-      <div id="XSDFXPage" class="XSDFXPage"></div>
+      <!-- 备注信息弹窗 -->
+      <el-dialog width="600px" style="height:800px" title="选择地点" :visible.sync="showMap">
+        <div id="allMap"></div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -110,20 +116,15 @@
 <script>
 import { TimeSelect } from "element-ui";
 import tinymce from "../../../components/tinymce/tinymce";
-import {
-  getmerchantList,
-  getmerchantAcount,
-  addMerchant,
-} from "../../../network/merchant";
+import { addCmtShop } from "../../../network/merchant";
 export default {
   components: { tinymce },
   data() {
     return {
       defaultMsg: "", // 富文本默认提示信息
-
+      showMap: false,
       editForm: {
         name: "",
-
         phone: "",
         photo: "",
         photoOne: "",
@@ -133,17 +134,14 @@ export default {
         address: "",
         coordinates: "",
         name: "",
+        particulars: "",
       },
       rules: {
-        account: [{ required: true, message: "必填项不能为空", tigger: "" }],
-        fee: [{ required: true, message: "必填项不能为空" }],
-        name: [{ required: true, message: "必填项不能为空" }],
-        sort: [{ required: true, message: "必填项不能为空" }],
+        name: [{ required: true, message: "商家名称不能为空" }],
         phone: [{ required: true, message: "必填项不能为空" }],
-        ensureAmt: [{ required: true, message: "必填项不能为空" }],
-        ensureMax: [{ required: true, message: "必填项不能为空" }],
-        ensureMin: [{ required: true, message: "必填项不能为空" }],
-        ensure: [{ required: true, message: "必填项不能为空" }],
+        city: [{ required: true, message: "必填项不能为空" }],
+        address: [{ required: true, message: "必填项不能为空" }],
+        coordinates: [{ required: true, message: "必填项不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -151,12 +149,9 @@ export default {
   },
 
   methods: {
-    //   // 鼠标单击的事件
-    // 	onClick (e, editor) {
-    // 		console.log('Element clicked')
-    // 		console.log(e)
-    // 		console.log(editor)
-    // 	},
+    onClick() {
+      console.log(this.editForm.particulars);
+    },
     // 上传商家头像
     handlephoto(res, file) {
       this.editForm.photo = "http://res.chainmall.pro/" + res.data;
@@ -178,8 +173,92 @@ export default {
       console.log(res);
       console.log(file);
     },
-    subChange() {
-      console.log(this.defaultMsg);
+    chooseMap() {
+      // if (this.editForm.address != "") {
+      let offa = this.editForm.address;
+      if (offa != "") {
+        this.showMap = true;
+        setTimeout(() => {
+          let map = new BMap.Map("allMap"); // 创建Map实例
+          let a = this.editForm;
+          // 百度地图API功能
+          map.centerAndZoom(new BMap.Point(112.460321, 34.623307), 15); // 初始化地图,设置中心点坐标和地图级别
+          //添加地图类型控件
+          //单击获取点击的经纬度
+          map.addEventListener("click", function (e) {
+            a.coordinates = e.point.lng + "," + e.point.lat;
+            map.clearOverlays();
+            // alert(e.point.lng + "," + e.point.lat);
+            let x_pi = (3.14159265358979324 * 3000.0) / 180.0;
+            let x = e.point.lng - 0.0065;
+            let y = e.point.lat - 0.006;
+            let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+            let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+            let lngs = z * Math.cos(theta);
+            let lats = z * Math.sin(theta);
+            let point = new BMap.Point(e.point.lng, e.point.lat);
+            let marker = new BMap.Marker(point); // 创建标注
+            map.addOverlay(marker);
+            // $('input[name="coordinates"]').val(e.point.lng + "," + e.point.lat);
+          });
+          map.addControl(
+            new BMap.MapTypeControl({
+              mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP],
+            })
+          );
+          map.setCurrentCity("洛阳"); // 设置地图显示的城市 此项是必须设置的
+          map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+          var size = new BMap.Size(10, 20);
+          map.addControl(
+            new BMap.CityListControl({
+              anchor: BMAP_ANCHOR_TOP_LEFT,
+              offset: size,
+            })
+          );
+
+          let local = new BMap.LocalSearch(map, {
+            renderOptions: { map: map },
+          });
+          local.search(offa);
+        }, 500);
+      } else {
+        this.$message.error("请输入地址");
+      }
+
+      // }
+    },
+    subChange(formName, res) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(parseInt(this.editForm.phone))) {
+            this.$message.error("请输入正确手机号！")
+            return false;
+          }
+          if (this.editForm.photo == "") {
+            this.$message.error("请上传商家头像缩略图！");
+            return false;
+          }
+          this.editForm.photo = this.editForm.photo.slice(25);
+          this.editForm.photoOne = this.editForm.photoOne.slice(25);
+          this.editForm.photoTwo = this.editForm.photoTwo.slice(25);
+          this.editForm.photoThree = this.editForm.photoThree.slice(25);
+          let obj = this.$qs.stringify(this.editForm);
+          addCmtShop(obj).then((res) => {
+            console.log(res);
+            if (res.code == 0) {
+              this.$message({
+                type: "success",
+                message: res.msg,
+              });
+              this.$router.push({ path: "/merchant/cmtShop" });
+            }
+          });
+        } else {
+          this.$message.error("请检查必填项是否为空");
+          return false;
+        }
+      });
     },
     resetForm(ruleForm) {
       this.$refs[ruleForm].resetFields();
@@ -188,52 +267,12 @@ export default {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
     },
   },
-  mounted() {
-     // 百度地图API功能
-	var map = new BMap.Map("XSDFXPage");    // 创建Map实例
-	map.centerAndZoom(new BMap.Point(112.460321,34.623307), 15);  // 初始化地图,设置中心点坐标和地图级别
-	//添加地图类型控件
-    //单击获取点击的经纬度
-	map.addEventListener("click",function(e){
-    this.editForm.coordinates=e.point.lng + "," + e.point.lat
-    map.clearOverlays()
-    // alert(e.point.lng + "," + e.point.lat);
-    let x_pi = 3.14159265358979324 * 3000.0 / 180.0;
-    let x = e.point.lng - 0.0065;
-    let y = e.point.lat - 0.006;
-    let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
-    let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
-    let lngs = z * Math.cos(theta);
-    let lats = z * Math.sin(theta);
-    let point = new BMap.Point(e.point.lng,e.point.lat);
-    let marker = new BMap.Marker(point);  // 创建标注
-    map.addOverlay(marker);
-    // $('input[name="coordinates"]').val(e.point.lng + "," + e.point.lat);
-  });
-  	map.addControl(new BMap.MapTypeControl({
-		mapTypes:[
-            BMAP_NORMAL_MAP,
-            BMAP_HYBRID_MAP
-        ]}));	  
-	map.setCurrentCity("洛阳");          // 设置地图显示的城市 此项是必须设置的
-	map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-    
-    
-  var size = new BMap.Size(10, 20);
-  map.addControl(new BMap.CityListControl({
-      anchor: BMAP_ANCHOR_TOP_LEFT,
-      offset: size,
-  }));
-
-  var local = new BMap.LocalSearch(map, {
-		renderOptions:{map: map}
-	});
-  },
+  mounted() {},
 };
 </script>
 <style lang="less">
-.XSDFXPage {
-  width: 50%;
+#allMap {
+  width: 100%;
   height: 600px;
   overflow: hidden;
   margin: 0px auto;

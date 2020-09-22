@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">商铺类型</p>
+    <p class="table_title">直播商品库</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -14,6 +14,24 @@
             @click="gotoAdd"
             icon="el-icon-plus"
           >增加</el-button>
+          <el-button
+            type="primary"
+            size="large"
+            style="border:none;border-radius:2px;margin-right:10px"
+            @click="examined"
+          >审核通过</el-button>
+          <el-button
+            type="primary"
+            size="large"
+            style="border:none;border-radius:2px;margin-right:10px"
+            @click="examing"
+          >审核中</el-button>
+          <el-button
+            type="primary"
+            size="large"
+            style="border:none;border-radius:2px;margin-right:10px"
+            @click="examineno"
+          >审核驳回</el-button>
         </div>
         <el-table
           ref="multipleTable"
@@ -23,25 +41,55 @@
           class="userList_table"
         >
           <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
+          <el-table-column align="center" label="分享图" width="150">
+            <template slot-scope="scope" class="headImage">
+              <img
+                v-if="scope.row.coverImgUrl"
+                :src="scope.row.coverImgUrl"
+                style="margin-left:40px;display:block;width:40px;"
+                alt
+              />
+            </template>
+          </el-table-column>
 
-          <el-table-column align="left" prop="typeName" label="分类名称" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="createTime" label="创建时间" width="200"></el-table-column>
-          <el-table-column align="center" label="操作" fixed="right" width="161">
+          <el-table-column align="center" prop="name" label="商品名"></el-table-column>
+          <el-table-column align="center" prop="price" label="商品价格"></el-table-column>
+          <el-table-column align="center" label="操作" fixed="right" width="240">
             <template slot-scope="scope">
-              <el-button
-                type="warning"
-                size="mini"
-                style="background-color:#009688;border:none;border-radius:2px;margin-right:10px"
-                icon="el-icon-edit"
-                @click="change(scope.row)"
-              >编辑</el-button>
-              <el-button
-                type="warning"
-                size="mini"
-                style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
-                icon="el-icon-delete"
-                @click="delTeam(scope.row)"
-              >删除</el-button>
+              <div v-if="status==2">
+                <el-button
+                  type="warning"
+                  size="mini"
+                  style="background-color:#009688;border:none;border-radius:2px;margin-right:10px"
+                  icon="el-icon-edit"
+                  @click="change(scope.row)"
+                >编辑</el-button>
+                <el-button
+                  type="warning"
+                  size="mini"
+                  style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
+                  icon="el-icon-delete"
+                  @click="delTeam(scope.row)"
+                >删除</el-button>
+              </div>
+              <div v-else-if="status==1">
+                <el-button
+                  type="warning"
+                  size="mini"
+                  style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
+                  icon="el-icon-delete"
+                  @click="hoveTeam(scope.row)"
+                >撤回</el-button>
+              </div>
+              <div v-else>
+                <el-button
+                  type="warning"
+                  size="mini"
+                  style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
+                  icon="el-icon-delete"
+                  @click="delTeam(scope.row)"
+                >删除</el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -50,37 +98,28 @@
           @current-change="handleCurrentChange"
           :current-page="currentPage4"
           :page-sizes="[10, 20, 30, 40]"
-          :page-size="10"
+          :page-size="200"
           background
           layout="total, sizes, prev, pager, next, jumper"
           :total="pages"
         ></el-pagination>
       </div>
-      <!-- 编辑用户信息列表 -->
-      <el-dialog width="400px" title="添加" class="delTable" :visible.sync="add">
+      <!-- 编辑商品价格 -->
+      <el-dialog width="400px" title="修改商品价格" class="liveGoodsTabel" :visible.sync="edit">
         <el-form
           :label-position="labelPosition"
-          label-width="80px"
-          :model="editForm"
+          label-width="100px"
+          :value="addForm"
           :index="index"
         >
-          <el-form-item label="分类名称">
-            <el-input v-model="editForm.typeName"></el-input>
+          <el-form-item label="价格类型：">
+            <el-input v-model="addForm.priceType" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="价格：">
+            <el-input v-model="addForm.price"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="subChange">立即提交</el-button>
-            <el-button style="margin-left:60px" @click="add=false">取消</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-      <!-- 添加用户信息列表 -->
-      <el-dialog width="400px" title="添加" class="delTable" :visible.sync="edit">
-        <el-form :label-position="labelPosition" label-width="80px" :value="addForm" :index="index">
-          <el-form-item label="分类名称">
-            <el-input v-model="addForm.typeName"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="subAdd">立即提交</el-button>
             <el-button style="margin-left:60px" @click="edit= false">取消</el-button>
           </el-form-item>
         </el-form>
@@ -92,141 +131,152 @@
 <script>
 import { TimeSelect } from "element-ui";
 import {
-  findAllType,
-  addType,
-  delType,
-  changeType,
+  getLivegoods,
+  changeGoodsPrice,
+  delLiveGoods,
+  hoveLiveGoods,
 } from "../../../network/merchant";
 export default {
   components: {},
   data() {
     return {
-      username: "",
-      phone: "",
-      address: "",
-      user_addTime: "",
-      user_loginTime: "",
+      status: 2,
       tableData: [],
       currentPage4: 1,
       pages: null,
       multipleSelection: [],
       page: 1,
       limit: 10,
-      params: {
-        name: "",
-      },
-
-      lookform: {},
       addForm: {
-        typeName: "",
-        id: "",
-      },
-      editForm: {
-        typeName: "",
+        priceType: "1",
+        price: "",
+        goodsId: "",
       },
 
       labelPosition: "left",
       edit: false,
-      add: false,
       index: "",
     };
   },
   watch: {
     page() {
-          let obj = {
+      let obj = {
         page: this.page,
         limit: this.limit,
       };
       findAllType(obj).then((res) => {
-       // console.log(res);
+        // console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
     },
     limit() {
-          let obj = {
+      let obj = {
         page: this.page,
         limit: this.limit,
       };
       findAllType(obj).then((res) => {
-       // console.log(res);
+        // console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
     },
   },
   methods: {
+    //
     getList() {
       let obj = {
-        page: this.page,
+        offset: 0,
         limit: this.limit,
+        status: this.status,
       };
-      findAllType(obj).then((res) => {
-       // console.log(res);
+      getLivegoods(obj).then((res) => {
+        console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
     },
+    //   审核通过列表
+    examined() {
+      this.status = 2;
+      this.getList();
+    },
+    // 审核中
+    examing() {
+      this.status = 1;
+      this.getList();
+    },
+    // 审核驳回
+    examineno() {
+      this.status = 3;
+      this.getList();
+    },
 
     // 点击编辑事件
     change(res) {
-      (this.add = true),
-        (this.editForm.id = res.id),
-        (this.editForm.typeName = res.typeName);
+      this.edit = true;
+      this.addForm.goodsId = res.goodsId;
     },
+    // 提交编辑
     subChange() {
-      let obj = this.$qs.stringify(this.editForm);
-      changeType(obj).then((res) => {
-        if (res.code == 0) {
-          this.add = false;
-          this.$message({
-            message: res.msg,
-            type: "success",
-          });
-
-          this.getList();
-        } else {
-          this.$message.error("操作失败！");
-        }
-      });
-    },
-    // 提交添加内容事件
-    subAdd() {
-      console.log();
-      console.log(this.addForm);
-      if (this.addForm.typeName == "") {
-        this.$message("分类名称不可为空");
-        return false;
-      }
       let obj = this.$qs.stringify(this.addForm);
-      console.log(obj);
-      addType(obj).then((res) => {
-       // console.log(res);
+      changeGoodsPrice(obj).then((res) => {
         if (res.code == 0) {
-          this.edit = false;
           this.$message({
-            message: res.msg,
             type: "success",
+            message: "价格修改成功！",
           });
+          this.edit = false;
           this.getList();
         } else {
-          this.$message.error("添加失败");
+          this.$message.error("操作失败!");
         }
       });
     },
     // 删除单条数据
     delTeam(res) {
-      this.$confirm("确认批量删除？", "提示", {
+      this.$confirm("确认删除此商品？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          let obj = {
-            id: res.id,
-          };
-          delType(obj).then((res) => {
-           // console.log(res);
+          console.log(res);
+          let obj = this.$qs.stringify({
+            goodsId: res.goodsId,
+          });
+          delLiveGoods(obj).then((res) => {
+            // console.log(res);
+            if (res.code == 0) {
+              this.$message({
+                type: "success",
+                message: res.msg,
+              });
+            } else {
+              this.$message.error("操作失败！");
+            }
+            this.getList();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消操作",
+          });
+        });
+    },
+    hoveTeam(res) {
+      this.$confirm("确认撤回此条审核？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let obj = this.$qs.stringify({
+            goodsId: res.goodsId,
+          });
+          hoveLiveGoods(obj).then((res) => {
+            // console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
@@ -254,7 +304,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.edit = true;
+      this.$router.push({ path: "/merchant/liveGoodsList/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -263,11 +313,12 @@ export default {
 
   created() {
     let obj = {
-      page: this.page,
+      offset: 0,
       limit: this.limit,
+      status: this.status,
     };
-    findAllType(obj).then((res) => {
-     // console.log(res);
+    getLivegoods(obj).then((res) => {
+      console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });
@@ -347,7 +398,7 @@ export default {
   display: block;
   width: 500px;
 }
-.delTable {
+.liveGoodsTabel {
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -355,7 +406,7 @@ export default {
   overflow: hidden;
   .el-dialog {
     margin: 20 auto !important;
-    height: 20%;
+    height: 30%;
     overflow: hidden;
     .el-dialog__body {
       position: absolute;

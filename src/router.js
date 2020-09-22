@@ -64,10 +64,30 @@ const barter_goodsForm = () =>
     import('./views/merchant/barter/barterGoodsForm.vue')
 const cmtShop = () =>
     import('./views/merchant/cmtShop/index.vue')
-    const cmtShop_add = () =>
+const cmtShop_add = () =>
     import('./views/merchant/cmtShop/addCmtshop.vue')
-    const cmtShop_edit = () =>
+const live_liveList = () =>
+    import('./views/merchant/live/liveList.vue')
+const cmtShop_edit = () =>
     import('./views/merchant/cmtShop/editCmtShop.vue')
+const live_goodsList = () =>
+    import('./views/merchant/live/goodsList.vue')
+const live_add = () =>
+    import('./views/merchant/live/addLive.vue')
+const liveGoodsList = () =>
+    import('./views/merchant/live/liveGoodsList.vue')
+const addLiveGoods = () =>
+    import('./views/merchant/live/addGoods.vue')
+const merClass = () =>
+    import('./views/commodity/merClass/index')
+const addmerClass = () =>
+    import('./views/commodity/merClass/addmerclass.vue')
+const editmerClass = () =>
+    import('./views/commodity/merClass/edit.vue')
+const exchange = () =>
+    import('./views/commodity/exchange/index')
+    const exchange_add = () =>
+    import('./views/commodity/exchange/add.vue')
 // ________________________________________________
 
 const department = () =>
@@ -358,7 +378,7 @@ export default new Router({
                 path: '/merchant/cmtShop/add',
                 name: 'cmtShop',
                 meta: {
-                   
+
                 },
                 component: cmtShop_add
             },
@@ -366,10 +386,87 @@ export default new Router({
                 path: '/merchant/cmtShop/form',
                 name: 'cmtShop',
                 meta: {
-                  
                 },
                 component: cmtShop_edit
             },
+            {
+                path: '/merchant/liveShow',
+                name: 'liveShow',
+                meta: {
+                    title: "直播间管理"
+                },
+                component: live_liveList
+            },
+            {
+                path: '/merchant/liveShow/goodsList',
+                name: 'live_goodsList',
+                meta: {
+
+                },
+                component: live_goodsList
+            },
+            {
+                path: '/live/liveAdd',
+                name: 'liveAdd',
+                meta: {
+
+                },
+                component: live_add
+            },
+            {
+                path: '/merchant/liveGoodsList',
+                name: 'liveGoodsList',
+                meta: {
+                    title: "直播商品库"
+                },
+                component: liveGoodsList
+            },
+            {
+                path: '/merchant/liveGoodsList/add',
+                name: 'addLiveGoods',
+                meta: {
+                    title: "提交商品并审核"
+                },
+                component: addLiveGoods
+            },
+            {
+                path: '/commodity/merClass',
+                name: 'merClass',
+                meta: {
+                    title: "商家商品分类"
+                },
+                component: merClass
+            },
+            {
+                path: '/commodity/merClass/add',
+                name: 'addmerClass',
+                meta: {
+
+                },
+                component: addmerClass
+            },
+            {
+                path: '/commodity/merClass/edit',
+                name: 'editmerClass',
+                meta: {
+
+                },
+                component: editmerClass
+            },
+            {
+                path: '/commodity/exchange',
+                name: 'exchange',
+                meta: {
+                    title: "兑换商品"
+                },
+                component: exchange
+            },
+            {
+                path: '/commodity/exchange/add',
+                name: 'exchange_add',
+                component: exchange_add
+            },
+
             // ————————————————————————————————————————————————————————————————————
             {
                 path: '/leave',
