@@ -1,0 +1,33 @@
+{
+    "name": "mytest",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build"
+    },
+    "dependencies": {
+        "@tinymce/tinymce-vue": "^3.2.3",
+        "axios": "^0.17.0",
+        "core-js": "^2.6.5",
+        "element-ui": "^2.4.6",
+        "qs": "^6.9.4",
+        "screenfull": "^3.3.2",
+        "tinymce": "^5.4.2",
+        "vue": "^2.6.10",
+        "vue-baidu-map": "^0.21.22",
+        "vue-jsonp": "^0.1.8",
+        "vue-layer": "^1.2.0",
+        "vue-router": "^3.0.3",
+        "vuex": "^3.0.1"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^3.12.0",
+        "@vue/cli-service": "^3.12.0",
+        "node-sass": "^4.12.0",
+        "sass-loader": "^8.0.0",
+        "vue-template-compiler": "^2.6.10",
+        "less": "^2.7.3",
+        "less-loader": "^4.0.5"
+    }
+}
