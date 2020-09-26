@@ -8,7 +8,7 @@
       <el-form
         :label-position="labelPosition"
         label-width="100px"
-        style="padding:0px 60px"
+        style="padding: 0px 60px"
         ref="addForm"
         :model="addForm"
         :rules="rules"
@@ -17,14 +17,15 @@
         <el-form-item label="分类名称：" prop="name">
           <el-input
             v-model="addForm.name"
-            style="width:600px;margin-right:10px "
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类名称"
+            @blur="findNames"
           ></el-input>
         </el-form-item>
         <el-form-item label="分类描述：" prop="description">
           <el-input
             v-model="addForm.description"
-            style="width:600px;margin-right:10px"
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类描述"
           ></el-input>
         </el-form-item>
@@ -32,7 +33,7 @@
         <el-form-item label="排序：" prop="sort">
           <el-input
             v-model="addForm.sort"
-            style="width:600px;margin-right:10px "
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类排序"
           ></el-input>
         </el-form-item>
@@ -63,8 +64,15 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :disabled="isDisabled" @click="subChange('addForm')">立即提交</el-button>
-          <el-button style="margin-left:160px" @click="resetForm('addForm')">重置</el-button>
+          <el-button
+            type="primary"
+            :disabled="isDisabled"
+            @click="subChange('addForm')"
+            >立即提交</el-button
+          >
+          <el-button style="margin-left: 160px" @click="resetForm('addForm')"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -74,7 +82,7 @@
 <script>
 import { TimeSelect } from "element-ui";
 import tinymce from "../../../components/tinymce/tinymce";
-import { addShopClass, getMedia } from "../../../network/commodity";
+import { addShopClass, getMedia, findName } from "../../../network/commodity";
 export default {
   components: { tinymce },
   data() {
@@ -101,6 +109,22 @@ export default {
   },
 
   methods: {
+    // 判断名字是否重复
+    findNames() {
+      let obj = this.$qs.stringify({
+        name: this.addForm.name,
+      });
+      findName(obj).then((res) => {
+        if (res.msg == "此分类已存在") {
+          this.$message.error("此分类已存在");
+        } else {
+          this.$message({
+            type: "success",
+            message: res.msg,
+          });
+        }
+      });
+    },
     // 上传直播背景
     handlephoto(res, file) {
       console.log(res);
@@ -134,7 +158,7 @@ export default {
                 message: res.msg,
               });
               this.$router.push({ path: "/commodity/merClass" });
-            }else{
+            } else {
               this.$message.error("操作失败！");
             }
           });

@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加兑换商品</p>
+    <p class="table_title">添加产品</p>
     <!-- 搜索列表 -->
     <div class="addExchange">
       <!-- 编辑用户信息列表 -->
@@ -50,6 +50,16 @@
                 placeholder="请输入商品名称"
               ></el-input>
             </el-form-item>
+            <el-form-item label="商家名称" prop="shopId">
+              <el-select v-model="addForm.shopId" placeholder="请选择">
+                <el-option
+                  v-for="item in options_shopName"
+                  :key="item.sId"
+                  :label="item.name"
+                  :value="item.sId"
+                ></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="排序：" prop="sort">
               <el-input
                 v-model="addForm.sort"
@@ -76,16 +86,15 @@
         <p class="form_title">商品价格及规格</p>
         <!-- 动态增加项目 -->
         <!-- 不止一个项目，用div包裹起来 -->
-
         <div
           class="attrBox"
           style="width: 100%; display: flex"
-          v-for="(item, index) in addForm.sysgoodslist"
+          v-for="(item, index) in addForm.goodslist"
           :key="index"
         >
           <el-form-item
             label="商品规格"
-            :prop="'sysgoodslist.' + index + '.param'"
+            :prop="'goodslist.' + index + '.param'"
             :rules="{
               required: true,
               message: '商品规格不能为空',
@@ -99,7 +108,7 @@
           </el-form-item>
           <el-form-item
             label="商品售价"
-            :prop="'sysgoodslist.' + index + '.price'"
+            :prop="'goodslist.' + index + '.price'"
             :rules="[
               { required: true, message: '商品售价不能为空', trigger: 'blur' },
             ]"
@@ -110,32 +119,21 @@
             ></el-input>
           </el-form-item>
           <el-form-item
-            label="积分售价"
-            :prop="'sysgoodslist.' + index + '.integralPrice'"
+            label="奖励积分"
+            :prop="'goodslist.' + index + '.integrals'"
             :rules="[
-              { required: true, message: '积分售价不能为空', trigger: 'blur' },
+              { required: true, message: '奖励积分不能为空', trigger: 'blur' },
             ]"
           >
             <el-input
-              v-model="item.integralPrice"
+              v-model="item.integrals"
               style="width: 100px; margin-right: 10px"
             ></el-input>
           </el-form-item>
-          <el-form-item
-            label="成本价"
-            :prop="'sysgoodslist.' + index + '.costPrice'"
-            :rules="[
-              { required: true, message: '成本价不能为空', trigger: 'blur' },
-            ]"
-          >
-            <el-input
-              v-model="item.costPrice"
-              style="width: 100px; margin-right: 10px"
-            ></el-input>
-          </el-form-item>
+
           <el-form-item
             label="库存"
-            :prop="'sysgoodslist.' + index + '.amount'"
+            :prop="'goodslist.' + index + '.amount'"
             :rules="[
               { required: true, message: '库存不能为空', trigger: 'blur' },
             ]"
@@ -147,7 +145,7 @@
           </el-form-item>
           <el-form-item
             label="图片"
-            :prop="'sysgoodslist.' + index + '.price'"
+            :prop="'goodslist.' + index + '.price'"
             :rules="[
               { required: true, message: '图片不能为空', trigger: 'blur' },
             ]"
@@ -159,8 +157,8 @@
               :show-file-list="false"
             >
               <img
-                v-if="item.image != ''"
-                :src="item.images"
+                v-if="item.images != ''"
+                :src="item.image"
                 @click="getIndex(index)"
                 class="avatar"
               />
@@ -183,6 +181,54 @@
         <el-button @click="addItem" type="primary">添加规格</el-button>
         <p class="form_title">商品设置资料</p>
         <div style="padding-left: 50px">
+          <el-form-item label="是否上架：">
+            <el-radio-group v-model="addForm.isOnline">
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="是否推荐：">
+            <el-radio-group v-model="addForm.isRecommend">
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="参与返佣：">
+            <el-radio-group v-model="addForm.isDistribution">
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <div style="display: flex" v-if="addForm.isDistribution == 1">
+            <el-form-item prop="firstProportion">
+              一级返佣：
+              <el-input
+                v-model="addForm.firstProportion"
+                style="width: 200px; margin-right: 10px; margin-bottom: 10px"
+                placeholder="请输入 0~100 纯数字"
+                autocomplete="off"
+              ></el-input>
+              <span style="color: #aaa; margin-right: 20px">% </span>
+            </el-form-item>
+            <el-form-item prop="secondProportion">
+              二级返佣：
+              <el-input
+                v-model="addForm.secondProportion"
+                style="width: 200px; margin-right: 10px; margin-bottom: 10px"
+                placeholder="请输入 0~100 纯数字"
+                autocomplete="off"
+              ></el-input>
+              <span style="color: #aaa; margin-right: 20px">% </span>
+            </el-form-item>
+          </div>
+          <el-form-item label="销量：" prop="sellAmt">
+            <el-input
+              placeholder="请输入纯数字"
+              v-model="addForm.sellAmt"
+              style="width: 200px; margin-right: 10px"
+            ></el-input
+            >修改商品销量
+          </el-form-item>
           <el-form-item label="商品分类：" prop="goodsClass">
             <el-select v-model="value" placeholder="请选择">
               <el-option
@@ -193,7 +239,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="可用积分：" prop="integrals">
+          <el-form-item label="商品标签" prop="tag">
             <el-select
               v-model="value1"
               @change="a"
@@ -203,33 +249,10 @@
               <el-option
                 v-for="item in option_int"
                 :key="item.id"
-                :label="item.coinName"
-                :value="item.id"
+                :label="item.title"
+                :value="item.title"
               ></el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item label="选择默认积分:" prop="defaultIntegralId">
-            <el-select v-model="addForm.defaultIntegralId" placeholder="请选择">
-              <el-option
-                v-for="item in option_default"
-                :key="item.id"
-                :label="item.coinName"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="销量：" prop="sellAmt">
-            <el-input
-              v-model="addForm.sellAmt"
-              style="width: 200px; margin-right: 10px"
-            ></el-input
-            >修改商品销量
-          </el-form-item>
-          <el-form-item label="是否推荐：">
-            <el-radio-group v-model="addForm.isRecommend">
-              <el-radio label="1">是</el-radio>
-              <el-radio label="0">否</el-radio>
-            </el-radio-group>
           </el-form-item>
           <el-form-item label="商品详情：">
             <el-upload
@@ -273,13 +296,15 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import {
-  addShopClass,
-  getGoodsClass,
-  findAllIntegrals,
-  addGoods,
-} from "../../../network/commodity";
+
 import { quillEditor } from "vue-quill-editor";
+import {
+  findAllShops,
+  addShopClass,
+  getmerClass,
+  taxonomy,
+  addShopGoods,
+} from "../../../network/commodity";
 // 工具栏配置
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -326,27 +351,28 @@ export default {
         },
       },
       pictures: "",
+      options_shopName: [],
       options: null,
       option_int: [],
       option_default: [],
       value1: [],
       value: "",
+      value_shop: "",
       addForm: {
-        sysgoodslist: [
+        goodslist: [
           {
             param: "默认规格",
             price: "",
-            integralPrice: "",
-            costPrice: "",
+            integrals: "",
             amount: "",
             image: "",
             images: "",
           },
         ],
+        shopId: "",
         goodsClass: "",
-        integrals: "",
         sellAmt: "0",
-        defaultIntegralId: "",
+
         firstPicture: "",
         picture: "",
         name: "",
@@ -354,8 +380,11 @@ export default {
         sort: "",
         freight: "",
         isRecommend: "1",
-        detailPicture: "",
-        status: 1,
+        isOnline: "1",
+        isDistribution: "1",
+        firstProportion: "",
+        secondProportion: "",
+        content: "",
         tag: "",
       },
       getImage: "",
@@ -366,12 +395,12 @@ export default {
         describe: [{ required: true, message: "必填项不能为空" }],
         freight: [{ required: true, message: "必填项不能为空" }],
         sellAmt: [{ required: true, message: "必填项不能为空" }],
-        integrals: [{ required: true, message: "必填项不能为空" }],
-        defaultIntegralId: [{ required: true, message: "必填项不能为空" }],
+        tag: [{ required: true, message: "必填项不能为空" }],
+        shopId: [{ required: true, message: "必填项不能为空" }],
         goodsClass: [{ required: true, message: "必填项不能为空" }],
       },
       labelPosition: "top",
-      index: 0,
+      index: "",
     };
   },
   watch: {
@@ -409,41 +438,27 @@ export default {
       } else {
         this.$message.error("图片插入失败");
       }
+      this.fileList = fileList;
       this.uillUpdateImg = false;
     },
+    submit() {
+      console.log(this.value_editor);
+    },
     a(value) {
-      console.log(value);
-      let integrals = "|";
-      for (let itemss in value) {
-        integrals += value[itemss];
-        integrals += "|";
-      }
-      this.addForm.integrals = integrals;
-      console.log(integrals);
-      let objs = [];
-
-      for (let item of value) {
-        for (let items of this.option_int) {
-          if (item == items.id) {
-            console.log(items);
-            objs.push(items);
-          }
-        }
-      }
-      this.option_default = objs;
+      this.addForm.tag = this.value1.toString();
     },
     addItem() {
-      this.addForm.sysgoodslist.push({
+      this.addForm.goodslist.push({
         param: "默认规格",
         price: "",
-        integralPrice: "",
-        costPrice: "",
+        integrals: "",
         amount: "",
         image: "",
+        images: "",
       });
     },
     deleteItem(item, index) {
-      this.addForm.sysgoodslist.splice(index, 1);
+      this.addForm.goodslist.splice(index, 1);
     },
     //   上传轮播图
     handleRemove(res, fileList) {},
@@ -473,11 +488,10 @@ export default {
     },
     // 商品图片上传
     handleimage(res, file) {
-      console.log(this.index);
-      console.log(this.addForm.sysgoodslist);
-      this.addForm.sysgoodslist[this.index].images =
+      this.addForm.goodslist[this.index].image =
         "http://res.chainmall.pro/" + res.data;
-      this.addForm.sysgoodslist[this.index].image = res.data;
+      this.addForm.goodslist[this.index].images = res.data;
+      console.log(this.addForm.goodslist);
     },
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
@@ -494,26 +508,34 @@ export default {
           goodsClass += this.value;
           goodsClass += "|";
           console.log(goodsClass);
-          // this.addForm.sysgoodslist = JSON.stringify(this.addForm.sysgoodslist);
-          let list = JSON.stringify(this.addForm.sysgoodslist);
+          // this.addForm.goodslist = JSON.stringify(this.addForm.goodslist);
+          let list = JSON.stringify(this.addForm.goodslist);
+          let isRecommend = parseInt(this.addForm.isRecommend);
+          let isOnline = parseInt(this.addForm.isOnline);
+          let isDistribution = parseInt(this.addForm.isDistribution);
+          let a = this.addForm;
+          console.log(a);
           let obj = this.$qs.stringify({
-            sysgoodslist: list,
+            shopId: this.addForm.shopId,
+            goodslist: list,
             goodsClass: this.addForm.goodsClass,
             integrals: this.addForm.integrals,
-            sellAmt: "0",
-            defaultIntegralId: this.addForm.defaultIntegralId,
+            sellAmt: this.addForm.sellAmt,
             firstPicture: this.addForm.firstPicture,
             picture: this.addForm.picture,
             name: this.addForm.name,
             describe: this.addForm.describe,
             sort: this.addForm.sort,
             freight: this.addForm.freight,
-            isRecommend: "1",
-            detailPicture: this.value_editor,
-            status: 1,
-            tag: "",
+            isRecommend: isRecommend,
+            isOnline: isOnline,
+            isDistribution: isDistribution,
+            firstProportion: this.addForm.firstProportion,
+            secondProportion: this.addForm.secondProportion,
+            content: this.value_editor,
+            tag: this.addForm.tag,
           });
-          addGoods(obj).then((res) => {
+          addShopGoods(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
@@ -537,11 +559,15 @@ export default {
   },
   created() {
     let obj = {};
-    getGoodsClass(obj).then((res) => {
+    findAllShops(obj).then((res) => {
+      console.log(res);
+      this.options_shopName = res.data;
+    });
+    getmerClass(obj).then((res) => {
       console.log(res);
       this.options = res.data;
     });
-    findAllIntegrals(obj).then((res) => {
+    taxonomy(obj).then((res) => {
       console.log(res);
       this.option_int = res.data;
     });
@@ -550,6 +576,9 @@ export default {
 };
 </script>
 <style lang="less">
+.ivu-upload {
+  display: none;
+}
 .attrBox {
   align-items: center;
   .avatar {
@@ -583,7 +612,6 @@ export default {
   padding: 0px 15px;
 }
 .form_title {
-  margin-top: 10px;
   display: block;
   font-size: 14px;
   height: 43px;

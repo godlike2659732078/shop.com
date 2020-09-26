@@ -1,71 +1,82 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加商品分类</p>
+    <p class="table_title">添加银行</p>
     <!-- 搜索列表 -->
-    <div class="editShopClass">
+    <div class="addTaxonomy">
       <!-- 编辑用户信息列表 -->
       <el-form
         :label-position="labelPosition"
         label-width="100px"
-        style="padding:0px 60px"
+        style="padding: 0px 60px"
         ref="addForm"
         :model="addForm"
         :rules="rules"
         :index="index"
       >
-        <el-form-item label="分类名称：" prop="name">
+        <el-form-item label="银行名称：" prop="bankName">
           <el-input
-            v-model="addForm.name"
-            style="width:600px;margin-right:10px "
-            placeholder="请输入分类名称"
-            @blur="findNames"
+            v-model="addForm.bankName"
+            style="width: 600px; margin-right: 10px"
+            placeholder="请输入银行名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="分类描述：" prop="description">
+        <el-form-item label="银行标识：" prop="bankCode">
           <el-input
-            v-model="addForm.description"
-            style="width:600px;margin-right:10px"
-            placeholder="请输入分类描述"
+            v-model="addForm.bankCode"
+            style="width: 600px; margin-right: 10px"
+            placeholder="请输入银行标识"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="排序：" prop="sort">
-          <el-input
-            v-model="addForm.sort"
-            style="width:600px;margin-right:10px "
-            placeholder="请输入分类排序"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="缩略图：" prop="image">
+        <el-form-item label="银行图标：" prop="bankLogo">
           <el-upload
             class="avatar-uploader"
             action="http://res.chainmall.pro/img/saveImage/image"
-            :on-success="handlephoto"
+            :on-success="handlebankLogo"
             :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
           >
-            <img v-if="addForm.image" :src="addForm.image" class="avatar" />
+            <img
+              v-if="addForm.bankLogo"
+              :src="addForm.bankLogo"
+              class="avatar"
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="银行图片：" prop="bankImage">
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :on-success="handlebankImage"
+            :show-file-list="false"
+          >
+            <img
+              v-if="addForm.bankImage"
+              :src="addForm.bankImage"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
 
-        <el-form-item label="是否首页：">
-          <el-radio-group v-model="addForm.isHome">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="是否推荐：">
-          <el-radio-group v-model="addForm.isRecommend">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
+        <el-form-item label="是否开启：">
+          <el-radio-group v-model="addForm.isOpen">
+            <el-radio label="1">开启</el-radio>
+            <el-radio label="0">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :disabled="isDisabled" @click="subChange('addForm')">立即提交</el-button>
-          <el-button style="margin-left:160px" @click="resetForm('addForm')">重置</el-button>
+          <el-button
+            type="primary"
+            :disabled="isDisabled"
+            @click="subChange('addForm')"
+            >立即提交</el-button
+          >
+          <el-button style="margin-left: 160px" @click="resetForm('addForm')"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -74,25 +85,37 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { editShopClass, findShopClassById,findName } from "../../../network/commodity";
+import tinymce from "../../../components/tinymce/tinymce";
+import { addBank, findBankById,editBankById } from "../../../network/platform";
 export default {
+  components: { tinymce },
   data() {
     return {
+      options: [
+        {
+          value: "WEB",
+          label: "WEB",
+        },
+        {
+          value: "NATIVE",
+          label: "NATIVE",
+        },
+      ],
+
+      coverImg: "",
       addForm: {
-        name: "",
-        description: "",
-        sort: "",
-        image: "",
-        isHome: "",
-        isRecommend: "",
-        id:""
+        bankName: "",
+        bankCode: "",
+        bankLogo: "",
+        bankImage: "",
+        isOpen: "1",
       },
       isDisabled: false,
       rules: {
-        name: [{ required: true, message: "分类名称不能为空" }],
-        description: [{ required: true, message: "分类描述不能为空" }],
-        sort: [{ required: true, message: "分类排序不能为空" }],
-        image: [{ required: true, message: "缩略图不能为空" }],
+        bankName: [{ required: true, message: "必填项不能为空" }],
+        bankCode: [{ required: true, message: "必填项不能为空" }],
+        bankLogo: [{ required: true, message: "必填项不能为空" }],
+        bankImage: [{ required: true, message: "必填项不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -100,55 +123,39 @@ export default {
   },
 
   methods: {
-       // 判断名字是否重复
-    findNames() {
-      let obj = this.$qs.stringify({
-        name: this.addForm.name,
-      });
-      findName(obj).then((res) => {
-        if (res.msg == "此分类已存在") {
-          this.$message.error("此分类已存在");
-        } else {
-          this.$message({
-            type: "success",
-            message: res.msg,
-          });
-        }
-      });
-    },
-    // 上传直播背景
-    handlephoto(res, file) {
+    // 上传银行图标
+    handlebankLogo(res, file) {
       console.log(res);
-      this.addForm.image = "http://res.chainmall.pro/" + res.data;
+      this.addForm.bankLogo = "http://res.chainmall.pro/" + res.data;
       let path = res.data;
       let obj = {
         path: path,
       };
     },
-    beforeAvatarUpload(file) {
-      console.log(file.size);
-      let isLt80K = file.size / 1024 < 80;
-
-      if (!isLt80K) {
-        this.$message.error("商品图片大小不能超过 80kb!");
-        return false;
-      }
+    // 上传银行图片
+    handlebankImage(res, file) {
+      console.log(res);
+      this.addForm.bankImage = "http://res.chainmall.pro/" + res.data;
+      let path = res.data;
+      let obj = {
+        path: path,
+      };
     },
-
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.addForm.image = this.addForm.image.slice(25);
+          this.addForm.bankLogo = this.addForm.bankLogo.slice(25);
+          this.addForm.bankImage = this.addForm.bankImage.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editShopClass(obj).then((res) => {
+          editBankById(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/merClass" });
+              this.$router.push({ path: "/platform/bank" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -167,12 +174,9 @@ export default {
     let obj = {
       id: this.$route.query.id,
     };
-    findShopClassById(obj).then((res) => {
-      console.log(res);
+    findBankById(obj).then((res) => {
       this.addForm = res.data;
-       this.addForm.id= this.$route.query.id
-      this.addForm.isHome=res.data.isHome.toString()
-      this.addForm.isRecommend=res.data.isRecommend.toString()
+      this.addForm.isOpen = res.data.isOpen.toString();
     });
   },
 };
@@ -201,7 +205,7 @@ export default {
   border-left: 2px solid #009688;
   margin-bottom: 10px;
 }
-.editShopClass {
+.addTaxonomy {
   padding: 15px;
   .el-radio__inner {
     width: 20px;

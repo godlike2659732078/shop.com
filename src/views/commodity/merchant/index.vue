@@ -1,19 +1,33 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">兑换商品列表</p>
+    <p class="table_title">商家商品</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <div class="userserch_block">
         商品名称：
-        <el-input style="width:182px;margin-right:10px" v-model="goodsName" clearable></el-input>时间搜索：
+        <el-input
+          style="width: 182px; margin-right: 10px"
+          v-model="goodsName"
+          clearable
+        ></el-input>
+        店铺名称：
+        <el-input
+          style="width: 182px; margin-right: 10px"
+          v-model="shopName"
+          clearable
+        ></el-input>
+
+        时间搜索：
         <el-date-picker
-          style="width:300px;margin-right:10px"
+          style="width: 300px; margin-right: 10px"
           v-model="user_addTime"
           type="daterange"
           value-format="yyyy-MM-dd"
         ></el-date-picker>
-        <el-button type="primary" size="small" @click="serchData">搜索</el-button>
+        <el-button type="primary" size="small" @click="serchData"
+          >搜索</el-button
+        >
       </div>
       <!-- 用户信息列表 -->
       <div class="userList">
@@ -21,10 +35,11 @@
           <el-button
             type="primary"
             size="large"
-            style="border:none;border-radius:2px;margin-right:10px"
+            style="border: none; border-radius: 2px; margin-right: 10px"
             @click="gotoAdd"
             icon="el-icon-plus"
-          >增加</el-button>
+            >增加</el-button
+          >
         </div>
         <el-table
           ref="multipleTable"
@@ -33,42 +48,110 @@
           style="width:100% overflow:scroll"
           class="userList_table"
         >
-          <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
-          <el-table-column align="center" label="缩略图" width="100">
+          <el-table-column
+            type="index"
+            align="center"
+            label="序号"
+            width="50"
+          ></el-table-column>
+          <el-table-column align="center" label="缩略图" width="80">
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
                 v-if="scope.row.picture"
                 :src="scope.row.picture"
-                style="margin-left:10px;display:block;width:30px;"
+                style="margin-left: 10px; display: block; width: 30px"
                 alt
               />
             </template>
           </el-table-column>
 
-          <el-table-column align="center" prop="name" label="商品名称" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="id" label="商品ID"></el-table-column>
-          <el-table-column align="center" prop="quantity" label="限制数量"></el-table-column>
-          <el-table-column align="center" prop="price" label="销售价格"></el-table-column>
-          <el-table-column align="center" prop="integralPrice" label="积分价格"></el-table-column>
-          <el-table-column align="center" prop="amount" label="库存"></el-table-column>
-          <el-table-column align="center" prop="sort" label="排序" width="80"></el-table-column>
-          <el-table-column align="center" prop="freight" label="邮费"></el-table-column>
-          <el-table-column align="center" prop="className" label="分类"></el-table-column>
-          <el-table-column align="center" prop="status" label="状态" width="100">
+          <el-table-column
+            align="center"
+            prop="name"
+            label="商品名称"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="shopName"
+            label="商家名称"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="id"
+            label="商品ID"
+          ></el-table-column>
+
+          <el-table-column
+            align="center"
+            prop="price"
+            label="销售价格"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="sellAmt"
+            label="销量"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="amount"
+            label="库存"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="sort"
+            label="排序"
+            width="50"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="num"
+            label="收藏"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="tag"
+            label="标签"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="freight"
+            label="邮费"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="goodsClassName"
+            label="分类"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="status"
+            label="状态"
+            width="100"
+          >
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.status==0"
+                v-if="scope.row.isOnline == 0"
                 plain
                 size="mini"
-                style="border-radius:2px;margin-right:10px"
-              >已下架</el-button>
+                style="border-radius: 2px; margin-right: 10px"
+                >已下架</el-button
+              >
               <el-button
                 v-else
                 type="warning"
                 size="mini"
-                style="background-color:#009688;border:none;border-radius:2px;margin-right:10px"
-              >已上架</el-button>
+                style="
+                  background-color: #009688;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >已上架</el-button
+              >
             </template>
           </el-table-column>
 
@@ -79,36 +162,73 @@
             fixed="right"
             width="180px"
           ></el-table-column>
-          <el-table-column align="center" label="操作" fixed="right" width="240px">
+          <el-table-column
+            align="left"
+            label="操作"
+            fixed="right"
+            width="250px"
+          >
             <template slot-scope="scope">
               <el-button
                 type="warning"
                 size="mini"
-                style="background-color:#009688;border:none;border-radius:2px;margin-right:10px"
+                style="
+                  background-color: #009688;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
                 icon="el-icon-edit"
                 @click="eidt(scope.row)"
-              >编辑</el-button>
+                >编辑</el-button
+              >
               <el-button
-                v-if="scope.row.status==0"
+                v-if="scope.row.isOnline == 0"
                 plain
                 size="mini"
-                style="border-radius:2px;margin-right:10px"
+                style="border-radius: 2px; margin-right: 10px"
                 @click="upFace(scope.row)"
-              >上架</el-button>
+                >上架</el-button
+              >
               <el-button
                 v-else
                 type="warning"
                 size="mini"
-                style="background-color:#ffb800;border:none;border-radius:2px;margin-right:10px"
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
                 @click="downFace(scope.row)"
-              >下架</el-button>
+                >下架</el-button
+              >
               <el-button
                 type="warning"
                 size="mini"
-                style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
+                style="
+                  background-color: #ff5722;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
                 icon="el-icon-delete"
                 @click="delOne(scope.row)"
-              >删除</el-button>
+                >删除</el-button
+              >
+              <el-button
+                v-if="scope.row.shopGoodCouponStatus == 0"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #1e9fff;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                @click="gotoOpadd(scope.row)"
+                >优惠券</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -129,13 +249,18 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { allSysGoods, upShopClass, delGoods } from "../../../network/commodity";
+import {
+  findAllShopGoods,
+  upGoods,
+  delMerchantGoods,
+} from "../../../network/commodity";
 export default {
   components: {},
   data() {
     return {
       goodsName: "",
       phone: "",
+      shopName: "",
       address: "",
       user_addTime: "",
       tableData: [],
@@ -163,11 +288,12 @@ export default {
         page: this.page,
         limit: this.limit,
         goodsName: this.goodsName,
+        shopName: this.shopName,
         startTime: user_addTime[0],
         endTime: user_addTime[1],
       };
       //console.log(obj);
-      allSysGoods(obj).then((res) => {
+      findAllShopGoods(obj).then((res) => {
         //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -184,13 +310,14 @@ export default {
       let obj = {
         page: this.page,
         limit: this.limit,
+        shopName: this.shopName,
         goodsName: this.goodsName,
         startTime: user_addTime[0],
         endTime: user_addTime[1],
       };
       //console.log(obj);
-      allSysGoods(obj).then((res) => {
-       // console.log(res);
+      findAllShopGoods(obj).then((res) => {
+        //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -209,12 +336,13 @@ export default {
       let obj = {
         page: this.page,
         limit: this.limit,
+        shopName: this.shopName,
         goodsName: this.goodsName,
         startTime: user_addTime[0],
         endTime: user_addTime[1],
       };
-      //(obj);
-      allSysGoods(obj).then((res) => {
+      //console.log(obj);
+      findAllShopGoods(obj).then((res) => {
         //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -230,22 +358,22 @@ export default {
       }
       let obj = {
         goodsName: this.goodsName,
+        shopName: this.shopName,
         startTime: user_addTime[0],
         endTime: user_addTime[1],
       };
       //console.log(obj);
-      allSysGoods(obj).then((res) => {
+      findAllShopGoods(obj).then((res) => {
         //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
-
       });
     },
     // 点击编辑事件
     eidt(res) {
       //console.log(res);
       this.$router.push({
-        path: "/commodity/exchange/edit",
+        path: "/commodity/merchant/edit",
         query: {
           goodsId: res.id,
         },
@@ -260,9 +388,9 @@ export default {
         .then(() => {
           let obj = this.$qs.stringify({
             id: res.id,
-            status: 0,
+            isOnline: 0,
           });
-          upShopClass(obj).then((res) => {
+          upGoods(obj).then((res) => {
             //console.log(res);
             if (res.code == 0) {
               this.$message({
@@ -291,9 +419,9 @@ export default {
         .then(() => {
           let obj = this.$qs.stringify({
             id: res.id,
-            status: 1,
+            isOnline: 1,
           });
-          upShopClass(obj).then((res) => {
+          upGoods(obj).then((res) => {
             if (res.code == 0) {
               this.$message({
                 type: "success",
@@ -323,8 +451,8 @@ export default {
           let obj = this.$qs.stringify({
             goodsId: res.id,
           });
-          delGoods(obj).then((res) => {
-            // //console.log(res);
+          delMerchantGoods(obj).then((res) => {
+            // ////console.log(res);
             this.$message({
               type: "success",
               message: res.msg,
@@ -339,7 +467,17 @@ export default {
           });
         });
     },
-    // 页面数量
+    //添加优惠券
+    gotoOpadd(res) {
+      console.log(res);
+      this.$router.push({
+        path: "/commodity/merchant/opadd",
+        query: {
+          id: res.id,
+          sId: res.shopTableId,
+        },
+      });
+    }, // 页面数量
     handleSizeChange(val) {
       this.limit = 10;
       this.limit = val;
@@ -348,7 +486,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/commodity/exchange/add" });
+      this.$router.push({ path: "/commodity/merchant/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -360,8 +498,8 @@ export default {
       page: this.page,
       limit: this.limit,
     };
-    allSysGoods(obj).then((res) => {
-      //console.log(res);
+    findAllShopGoods(obj).then((res) => {
+      console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });

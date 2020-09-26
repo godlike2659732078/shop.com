@@ -89,9 +89,7 @@ export default {
     },
   },
   created() {
-    if (this.$route.query.type) {
-      this.$message.error("登录超时，请重新登录！");
-    }
+
   },
 };
 </script>

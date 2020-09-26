@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加兑换商品</p>
+    <p class="table_title">添加秒杀商品</p>
     <!-- 搜索列表 -->
     <div class="addExchange">
       <!-- 编辑用户信息列表 -->
@@ -225,6 +225,7 @@
             ></el-input
             >修改商品销量
           </el-form-item>
+         
           <el-form-item label="是否推荐：">
             <el-radio-group v-model="addForm.isRecommend">
               <el-radio label="1">是</el-radio>
@@ -331,6 +332,8 @@ export default {
       option_default: [],
       value1: [],
       value: "",
+      date1: "",
+      date2: "",
       addForm: {
         sysgoodslist: [
           {
@@ -356,7 +359,9 @@ export default {
         isRecommend: "1",
         detailPicture: "",
         status: 1,
-        tag: "",
+        tag: "链上推荐",
+        seckillTime: "",
+        duration: "",
       },
       getImage: "",
       isDisabled: false,
@@ -369,6 +374,8 @@ export default {
         integrals: [{ required: true, message: "必填项不能为空" }],
         defaultIntegralId: [{ required: true, message: "必填项不能为空" }],
         goodsClass: [{ required: true, message: "必填项不能为空" }],
+        seckillTime: [{ required: true, message: "必填项不能为空" }],
+        duration: [{ required: true, message: "必填项不能为空" }],
       },
       labelPosition: "top",
       index: 0,
@@ -495,6 +502,27 @@ export default {
           goodsClass += "|";
           console.log(goodsClass);
           // this.addForm.sysgoodslist = JSON.stringify(this.addForm.sysgoodslist);
+        //   let a={
+        //        sysgoodslist: list,
+        //     goodsClass: this.addForm.goodsClass,
+        //     integrals: this.addForm.integrals,
+        //     sellAmt: "0",
+        //     defaultIntegralId: this.addForm.defaultIntegralId,
+        //     firstPicture: this.addForm.firstPicture,
+        //     picture: this.addForm.picture,
+        //     name: this.addForm.name,
+        //     describe: this.addForm.describe,
+        //     sort: this.addForm.sort,
+        //     freight: this.addForm.freight,
+        //     isRecommend: "1",
+        //     detailPicture: this.value_editor,
+        //     status: 1,
+        //     tag: "链上推荐",
+        //     seckillTime: this.addForm.seckillTime,
+        //     duration: this.addForm.duration,
+        //   }
+        //  console.log(a)
+          
           let list = JSON.stringify(this.addForm.sysgoodslist);
           let obj = this.$qs.stringify({
             sysgoodslist: list,
@@ -511,7 +539,8 @@ export default {
             isRecommend: "1",
             detailPicture: this.value_editor,
             status: 1,
-            tag: "",
+            tag: "链上推荐",
+            
           });
           addGoods(obj).then((res) => {
             console.log(res);
@@ -520,7 +549,7 @@ export default {
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/exchange" });
+              this.$router.push({ path: "/commodity/recommended" });
             } else {
               this.$message.error("操作失败！");
             }

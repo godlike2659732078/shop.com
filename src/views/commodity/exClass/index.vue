@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">商家商品分类</p>
+    <p class="table_title">兑换商品分类</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -27,8 +27,8 @@
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
-                v-if="scope.row.image"
-                :src="scope.row.image"
+                v-if="scope.row.icon"
+                :src="scope.row.icon"
                 style="margin-left:10px;display:block;width:30px;"
                 alt
               />
@@ -96,16 +96,6 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="10"
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pages"
-        ></el-pagination>
       </div>
     </div>
   </div>
@@ -113,7 +103,7 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { getmerClass,delShopClass } from "../../../network/commodity";
+import { getexClass,delSysGoodsClass } from "../../../network/commodity";
 export default {
   components: {},
   data() {
@@ -137,7 +127,7 @@ export default {
         page: this.page,
         limit: this.limit,
       };
-      getmerClass(obj).then((res) => {
+      getexClass(obj).then((res) => {
         //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -148,7 +138,7 @@ export default {
     eidt(res) {
       console.log(res)
       this.$router.push({
-        path: "/commodity/merClass/edit",
+        path: "/commodity/exClass/edit",
         query: {
           id: res.id,
         },
@@ -166,7 +156,7 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delShopClass(obj).then((res) => {
+          delSysGoodsClass(obj).then((res) => {
             // //console.log(res);
             this.$message({
               type: "success",
@@ -191,7 +181,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/commodity/merClass/add" });
+      this.$router.push({ path: "/commodity/exClass/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -202,8 +192,8 @@ export default {
     let obj = {
       parentId: 0,
     };
-    getmerClass(obj).then((res) => {
-      //console.log(res);
+    getexClass(obj).then((res) => {
+      console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });

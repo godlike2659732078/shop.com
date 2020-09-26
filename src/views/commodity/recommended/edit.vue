@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加兑换商品</p>
+    <p class="table_title">编辑秒杀商品</p>
     <!-- 搜索列表 -->
     <div class="addExchange">
       <!-- 编辑用户信息列表 -->
@@ -14,7 +14,7 @@
         :rules="rules"
         :index="index"
       >
-        <p class="form_title">商品信息</p>
+        <p class="form_title">修改商品信息</p>
         <div style="display: flex">
           <div style="width: 500px">
             <el-form-item
@@ -23,9 +23,11 @@
             >
               <el-upload
                 action="http://res.chainmall.pro/img/saveImage/image"
+                :file-list="fileList"
                 list-type="picture-card"
                 :on-remove="handleRemove"
                 :on-success="success"
+                :index="index"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
@@ -76,16 +78,16 @@
         <p class="form_title">商品价格及规格</p>
         <!-- 动态增加项目 -->
         <!-- 不止一个项目，用div包裹起来 -->
-
+        <el-button @click="addItem" type="primary">添加规格</el-button>
         <div
           class="attrBox"
           style="width: 100%; display: flex"
-          v-for="(item, index) in addForm.sysgoodslist"
+          v-for="(item, index) in addForm.chainSysGoodsSpecificationsList"
           :key="index"
         >
           <el-form-item
             label="商品规格"
-            :prop="'sysgoodslist.' + index + '.param'"
+            :prop="'chainSysGoodsSpecificationsList.' + index + '.param'"
             :rules="{
               required: true,
               message: '商品规格不能为空',
@@ -99,7 +101,7 @@
           </el-form-item>
           <el-form-item
             label="商品售价"
-            :prop="'sysgoodslist.' + index + '.price'"
+            :prop="'chainSysGoodsSpecificationsList.' + index + '.price'"
             :rules="[
               { required: true, message: '商品售价不能为空', trigger: 'blur' },
             ]"
@@ -111,7 +113,9 @@
           </el-form-item>
           <el-form-item
             label="积分售价"
-            :prop="'sysgoodslist.' + index + '.integralPrice'"
+            :prop="
+              'chainSysGoodsSpecificationsList.' + index + '.integralPrice'
+            "
             :rules="[
               { required: true, message: '积分售价不能为空', trigger: 'blur' },
             ]"
@@ -123,7 +127,7 @@
           </el-form-item>
           <el-form-item
             label="成本价"
-            :prop="'sysgoodslist.' + index + '.costPrice'"
+            :prop="'chainSysGoodsSpecificationsList.' + index + '.costPrice'"
             :rules="[
               { required: true, message: '成本价不能为空', trigger: 'blur' },
             ]"
@@ -135,7 +139,7 @@
           </el-form-item>
           <el-form-item
             label="库存"
-            :prop="'sysgoodslist.' + index + '.amount'"
+            :prop="'chainSysGoodsSpecificationsList.' + index + '.amount'"
             :rules="[
               { required: true, message: '库存不能为空', trigger: 'blur' },
             ]"
@@ -147,7 +151,7 @@
           </el-form-item>
           <el-form-item
             label="图片"
-            :prop="'sysgoodslist.' + index + '.price'"
+            :prop="'chainSysGoodsSpecificationsList.' + index + '.price'"
             :rules="[
               { required: true, message: '图片不能为空', trigger: 'blur' },
             ]"
@@ -160,7 +164,7 @@
             >
               <img
                 v-if="item.image != ''"
-                :src="item.images"
+                :src="item.image"
                 @click="getIndex(index)"
                 class="avatar"
               />
@@ -180,7 +184,6 @@
             >
           </el-form-item>
         </div>
-        <el-button @click="addItem" type="primary">添加规格</el-button>
         <p class="form_title">商品设置资料</p>
         <div style="padding-left: 50px">
           <el-form-item label="商品分类：" prop="goodsClass">
@@ -189,7 +192,7 @@
                 v-for="item in options"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -225,6 +228,7 @@
             ></el-input
             >修改商品销量
           </el-form-item>
+        
           <el-form-item label="是否推荐：">
             <el-radio-group v-model="addForm.isRecommend">
               <el-radio label="1">是</el-radio>
@@ -273,13 +277,13 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import {
-  addShopClass,
-  getGoodsClass,
-  findAllIntegrals,
-  addGoods,
-} from "../../../network/commodity";
 import { quillEditor } from "vue-quill-editor";
+import {
+  getGoodsClass,
+  getOneGoods,
+  findAllIntegrals,
+  editGoods,
+} from "../../../network/commodity";
 // 工具栏配置
 const toolbarOptions = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -325,6 +329,7 @@ export default {
           },
         },
       },
+      fileList: [],
       pictures: "",
       options: null,
       option_int: [],
@@ -332,7 +337,7 @@ export default {
       value1: [],
       value: "",
       addForm: {
-        sysgoodslist: [
+        chainSysGoodsSpecificationsList: [
           {
             param: "默认规格",
             price: "",
@@ -376,10 +381,16 @@ export default {
   },
   watch: {
     value() {
-      let goodsClass = "|";
-      goodsClass += this.value;
-      goodsClass += "|";
-      this.addForm.goodsClass = goodsClass;
+      let num = "";
+      for (let item of this.options) {
+        if (item.name == this.value) {
+          num = item.id;
+        }
+      }
+      let goodsClass_ = "|";
+      goodsClass_ += num;
+      goodsClass_ += "|";
+      this.addForm.goodsClass = goodsClass_;
     },
   },
   methods: {
@@ -409,10 +420,12 @@ export default {
       } else {
         this.$message.error("图片插入失败");
       }
+
       this.uillUpdateImg = false;
     },
     a(value) {
       console.log(value);
+      console.log(this.value1);
       let integrals = "|";
       for (let itemss in value) {
         integrals += value[itemss];
@@ -421,7 +434,6 @@ export default {
       this.addForm.integrals = integrals;
       console.log(integrals);
       let objs = [];
-
       for (let item of value) {
         for (let items of this.option_int) {
           if (item == items.id) {
@@ -433,30 +445,34 @@ export default {
       this.option_default = objs;
     },
     addItem() {
-      this.addForm.sysgoodslist.push({
+      this.addForm.chainSysGoodsSpecificationsList.push({
         param: "默认规格",
         price: "",
         integralPrice: "",
         costPrice: "",
         amount: "",
         image: "",
+        images: "",
       });
     },
     deleteItem(item, index) {
-      this.addForm.sysgoodslist.splice(index, 1);
+      this.addForm.chainSysGoodsSpecificationsList.splice(index, 1);
     },
     //   上传轮播图
-    handleRemove(res, fileList) {},
+    handleRemove(res, fileList) {
+      console.log(res);
+      for (let item in this.fileList) {
+        if (res.uid == this.fileList[item].uid) {
+          this.fileList.splice(item, 1);
+        }
+      }
+      console.log(this.fileList);
+    },
     success(response, file, fileList) {
-      let str = "";
-      for (let item of fileList) {
-        str += item.response.data + ",";
-      }
-      if (str.length > 0) {
-        str = str.substr(0, str.length - 1);
-      }
-      console.log(str);
-      this.addForm.firstPicture = str;
+      console.log(response);
+
+      this.fileList.push({ url: "http://res.chainmall.pro/" + response.data });
+      console.log(this.fileList);
     },
     // 商品缩略图上传
     handlephoto(res, file) {
@@ -470,14 +486,12 @@ export default {
     },
     getIndex(index) {
       this.index = index;
+      console.log(index);
     },
     // 商品图片上传
     handleimage(res, file) {
-      console.log(this.index);
-      console.log(this.addForm.sysgoodslist);
-      this.addForm.sysgoodslist[this.index].images =
+      this.addForm.chainSysGoodsSpecificationsList[this.index].image =
         "http://res.chainmall.pro/" + res.data;
-      this.addForm.sysgoodslist[this.index].image = res.data;
     },
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
@@ -490,14 +504,28 @@ export default {
             this.$message.error("商品轮播图不能为空！");
             return false;
           }
-          let goodsClass = "|";
-          goodsClass += this.value;
-          goodsClass += "|";
-          console.log(goodsClass);
-          // this.addForm.sysgoodslist = JSON.stringify(this.addForm.sysgoodslist);
-          let list = JSON.stringify(this.addForm.sysgoodslist);
+
+          let str = "";
+          let items = "";
+          for (let item of this.fileList) {
+            items = item.url.slice(25);
+            str += items + ",";
+          }
+          if (str.length > 0) {
+            str = str.substr(0, str.length - 1);
+          }
+          console.log(str);
+          this.addForm.firstPicture = str;
+          for (let item of this.addForm.chainSysGoodsSpecificationsList) {
+            item.image = item.image.slice(25);
+          }
+          // this.addForm.chainSysGoodsSpecificationsList = JSON.stringify(this.addForm.chainSysGoodsSpecificationsList);
+
+          let list = JSON.stringify(
+            this.addForm.chainSysGoodsSpecificationsList
+          );
           let obj = this.$qs.stringify({
-            sysgoodslist: list,
+            chainSysGoodsSpecificationsList: list,
             goodsClass: this.addForm.goodsClass,
             integrals: this.addForm.integrals,
             sellAmt: "0",
@@ -511,16 +539,18 @@ export default {
             isRecommend: "1",
             detailPicture: this.value_editor,
             status: 1,
-            tag: "",
+             tag: "链上推荐",
+           
+            id: this.$route.query.goodsId,
           });
-          addGoods(obj).then((res) => {
+          editGoods(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/exchange" });
+              this.$router.push({ path: "/commodity/recommended" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -544,6 +574,60 @@ export default {
     findAllIntegrals(obj).then((res) => {
       console.log(res);
       this.option_int = res.data;
+    });
+    let obj_id = {
+      goodsId: this.$route.query.goodsId,
+    };
+    console.log(this.$route.query.goodsId);
+    getOneGoods(obj_id).then((res) => {
+      console.log(res);
+      this.addForm = res.data;
+      this.addForm.isRecommend = res.data.isRecommend.toString();
+      this.pictures = res.data.picture;
+      this.value_editor = res.data.detailPicture;
+      let goodsClass = res.data.goodsClass;
+      goodsClass = goodsClass.split("|");
+      console.log(goodsClass);
+      for (let item of this.options) {
+        if (goodsClass[1] == item.id) {
+          this.value = item.name;
+        }
+      }
+
+      let integrals = res.data.integrals;
+      integrals = integrals.split("|");
+      console.log(integrals);
+      this.value1 = integrals;
+      let arrItem = "";
+      let arr = [];
+      for (let item of integrals) {
+        if (item != "") {
+          arrItem = Number(item);
+          console.log(arrItem);
+          arr.push(arrItem);
+        }
+      }
+      this.value1 = arr;
+      let objs = [];
+      for (let item of this.value1) {
+        for (let items of this.option_int) {
+          if (item == items.id) {
+            console.log(items);
+            objs.push(items);
+          }
+        }
+      }
+      this.option_default = objs;
+      let firstPicture = res.data.firstPicture;
+      firstPicture = firstPicture.split(",");
+      console.log(firstPicture);
+      let pictures_ = [];
+      for (let item of firstPicture) {
+        item = { url: "http://res.chainmall.pro/" + item };
+        pictures_.push(item);
+      }
+      console.log(pictures_);
+      this.fileList = pictures_;
     });
   },
   mounted() {},
@@ -583,7 +667,6 @@ export default {
   padding: 0px 15px;
 }
 .form_title {
-  margin-top: 10px;
   display: block;
   font-size: 14px;
   height: 43px;

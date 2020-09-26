@@ -5,7 +5,12 @@
       <div class="logo">
         <span class="big">链上商城</span>
         <span class="min">
-          <img width="20" style="margin-top: 5px" src="../assets/images/logo.png" alt />
+          <img
+            width="20"
+            style="margin-top: 5px"
+            src="../assets/images/logo.png"
+            alt
+          />
         </span>
       </div>
       <span class="header-btn" @click="hiddenSidebar">
@@ -13,7 +18,7 @@
       </span>
       <div class="right">
         <span class="header-btn" @click="screen">
-          <i v-if="fullscreen==false" class="el-icon-full-screen"></i>
+          <i v-if="fullscreen == false" class="el-icon-full-screen"></i>
           <i v-else class="el-icon-crop"></i>
         </span>
         <el-dropdown>
@@ -21,7 +26,7 @@
             <i class="el-icon-setting"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <div style="padding: 10px;text-align: center;width: 420px">
+            <div style="padding: 10px; text-align: center; width: 420px">
               <div class="setting-category">
                 <el-switch
                   @change="saveSwitchTabBarVal"
@@ -48,11 +53,11 @@
 
         <el-dropdown>
           <span class="header-btn">
-            {{$store.state.nickname}}
+            {{ $store.state.nickname }}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="$router.push('/login')">
+            <el-dropdown-item @click.native="clearToken">
               <i style="padding-right: 8px" class="fa fa-key"></i>退出系统
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -64,6 +69,7 @@
       <div class="aside">
         <div class="menu">
           <el-menu
+            :unique-opened="true"
             router
             background-color="#222d32"
             text-color="#fff"
@@ -73,22 +79,30 @@
             @close="handleClose"
             :collapse="isCollapse"
           >
-            <template v-for="(menu_v,index) in menuList" v-for-item="cell">
-              <el-submenu v-if="menu_v.list.length!=0" :index="'/'+index+'/'" :key="menu_v.id">
+            <template v-for="(menu_v, index) in menuList" v-for-item="cell">
+              <el-submenu
+                v-if="menu_v.list.length != 0"
+                :index="'/' + index + '/'"
+                :key="menu_v.id"
+              >
                 <template slot="title">
                   <i :class="menu_v.icon"></i>
                   <span slot="title">{{ menu_v.name }}</span>
                 </template>
                 <el-menu-item
-                  v-for="(menuChildren_v,menuChildren_k) in menu_v.list"
+                  v-for="(menuChildren_v, menuChildren_k) in menu_v.list"
                   :key="menuChildren_k"
-                  :index="'/'+menuChildren_v.path"
+                  :index="'/' + menuChildren_v.path"
                 >
                   <i class="is-children fa fa-circle-o"></i>
                   <span slot="title">{{ menuChildren_v.name }}</span>
                 </el-menu-item>
               </el-submenu>
-              <el-menu-item v-else :index="'/'+menu_v.href" :key="menu_v.name ">
+              <el-menu-item
+                v-else
+                :index="'/' + menu_v.href"
+                :key="menu_v.name"
+              >
                 <i :class="menu_v.icon"></i>
                 <span slot="title">{{ menu_v.name }}</span>
               </el-menu-item>
@@ -106,12 +120,12 @@
         <NavBar
           id="nav-bar"
           v-if="switchTabBar"
-          :style="fixedTabBar && switchTabBar?'position: fixed;top: 0;':''"
+          :style="fixedTabBar && switchTabBar ? 'position: fixed;top: 0;' : ''"
         ></NavBar>
-        <div style="margin-top: 50px;"></div>
+        <div style="margin-top: 50px"></div>
         <div
           id="mainContainer"
-          :style="fixedTabBar && switchTabBar?'margin-top: 88px;':''"
+          :style="fixedTabBar && switchTabBar ? 'margin-top: 88px;' : ''"
           class="main-container"
         >
           <!--<transition name="fade">-->
@@ -138,11 +152,16 @@ export default {
       switchTabBar: false,
       // siteName: this.$Config.siteName,
       isCollapse: false,
-      menuList:null
+      menuList: null,
     };
   },
 
   methods: {
+    // 退出登录
+    clearToken() {
+      this.$store.state.accessToken = "";
+      this.$router.push({path:"/login"})
+    },
     //  菜单栏宽度设置
     NavBarWidth() {
       let navBar = document.getElementById("nav-bar");
@@ -235,7 +254,7 @@ export default {
     // 调用登录接口
     getSign().then((res) => {
       console.log(res);
-  this.menuList=res.data
+      this.menuList = res.data;
     });
   },
   mounted() {
@@ -312,6 +331,9 @@ export default {
 
 .el-menu:not(.el-menu--collapse) {
   width: 230px;
+}
+.el-form-item__content {
+  line-height: 20px;
 }
 .main {
   display: flex;
@@ -440,10 +462,10 @@ export default {
     height: 0;
   }
 }
-.el-dialog__title{
-      line-height: 24px;
-    font-size: 14px;
-    color: #303133;
+.el-dialog__title {
+  line-height: 24px;
+  font-size: 14px;
+  color: #303133;
 }
 .el-menu--vertical {
   min-width: 190px;
@@ -455,13 +477,15 @@ export default {
 .fa {
   margin-right: 14px;
 }
-input[disabled],input:disabled,input.disabled{  
-    color: #aaa;  
-    -webkit-text-fill-color:#aaa;  
-    -webkit-opacity:1;  
-    opacity: 1;  
-} 
-.el-submenu .el-menu-item{
+input[disabled],
+input:disabled,
+input.disabled {
+  color: #aaa;
+  -webkit-text-fill-color: #aaa;
+  -webkit-opacity: 1;
+  opacity: 1;
+}
+.el-submenu .el-menu-item {
   height: 40px;
   line-height: 40px;
 }

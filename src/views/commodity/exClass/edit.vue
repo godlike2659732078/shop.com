@@ -19,7 +19,7 @@
             v-model="addForm.name"
             style="width:600px;margin-right:10px "
             placeholder="请输入分类名称"
-            @blur="findNames"
+            @blur="findName"
           ></el-input>
         </el-form-item>
         <el-form-item label="分类描述：" prop="description">
@@ -37,7 +37,7 @@
             placeholder="请输入分类排序"
           ></el-input>
         </el-form-item>
-        <el-form-item label="缩略图：" prop="image">
+        <el-form-item label="缩略图：" prop="icon">
           <el-upload
             class="avatar-uploader"
             action="http://res.chainmall.pro/img/saveImage/image"
@@ -45,16 +45,9 @@
             :show-file-list="false"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="addForm.image" :src="addForm.image" class="avatar" />
+            <img v-if="addForm.icon" :src="addForm.icon" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-        </el-form-item>
-
-        <el-form-item label="是否首页：">
-          <el-radio-group v-model="addForm.isHome">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
-          </el-radio-group>
         </el-form-item>
         <el-form-item label="是否推荐：">
           <el-radio-group v-model="addForm.isRecommend">
@@ -74,7 +67,7 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { editShopClass, findShopClassById,findName } from "../../../network/commodity";
+import { editGoodsClass, findSysGoodsClassById ,findNames} from "../../../network/commodity";
 export default {
   data() {
     return {
@@ -82,9 +75,9 @@ export default {
         name: "",
         description: "",
         sort: "",
-        image: "",
-        isHome: "",
-        isRecommend: "",
+        icon: "",
+        isHome:"1",
+        isRecommend: "1",
         id:""
       },
       isDisabled: false,
@@ -92,7 +85,7 @@ export default {
         name: [{ required: true, message: "分类名称不能为空" }],
         description: [{ required: true, message: "分类描述不能为空" }],
         sort: [{ required: true, message: "分类排序不能为空" }],
-        image: [{ required: true, message: "缩略图不能为空" }],
+        icon: [{ required: true, message: "缩略图不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -101,12 +94,12 @@ export default {
 
   methods: {
        // 判断名字是否重复
-    findNames() {
-      let obj = this.$qs.stringify({
+    findName() {
+      let obj = {
         name: this.addForm.name,
-      });
-      findName(obj).then((res) => {
-        if (res.msg == "此分类已存在") {
+      };
+      findNames(obj).then((res) => {
+        if (res.msg == "分类名已存在") {
           this.$message.error("此分类已存在");
         } else {
           this.$message({
@@ -119,7 +112,7 @@ export default {
     // 上传直播背景
     handlephoto(res, file) {
       console.log(res);
-      this.addForm.image = "http://res.chainmall.pro/" + res.data;
+      this.addForm.icon = "http://res.chainmall.pro/" + res.data;
       let path = res.data;
       let obj = {
         path: path,
@@ -138,17 +131,17 @@ export default {
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.addForm.image = this.addForm.image.slice(25);
+          this.addForm.icon = this.addForm.icon.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editShopClass(obj).then((res) => {
+          editGoodsClass(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/merClass" });
+              this.$router.push({ path: "/commodity/exClass" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -167,7 +160,7 @@ export default {
     let obj = {
       id: this.$route.query.id,
     };
-    findShopClassById(obj).then((res) => {
+    findSysGoodsClassById(obj).then((res) => {
       console.log(res);
       this.addForm = res.data;
        this.addForm.id= this.$route.query.id

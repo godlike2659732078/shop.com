@@ -18,19 +18,18 @@ export
         })
         instance(config).then(res => {
             resolve(res.data)
-            if(!res){
-                console.log(11111)
-            }
             //token响应,登录超时判断
-            if (store.state.accessToken == "" || store.state.accessToken == null || store.state.accessToken.length == 0||res.data.code==4030) {
+            if (store.state.accessToken == "" || store.state.accessToken == null || store.state.accessToken.length == 0 || res.data.code == 4030) {
+                Message.error("请重新登录！")
                 router.push({
-                    path: "/login", query: {
-                        type: "reLogin"
-                    }
+                    path: "/login"
                 })
             }
         }).catch(err => {
             reject(err)
+            Message.error("请求出错，请稍后重试！！！")
+            router.push({ path: "/login" })
+            return false
         })
     })
 }

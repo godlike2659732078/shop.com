@@ -3,12 +3,12 @@
     <!-- 添加按钮 -->
     <p class="table_title">添加商品分类</p>
     <!-- 搜索列表 -->
-    <div class="editShopClass">
+    <div class="addSysGoodsClass">
       <!-- 编辑用户信息列表 -->
       <el-form
         :label-position="labelPosition"
         label-width="100px"
-        style="padding:0px 60px"
+        style="padding: 0px 60px"
         ref="addForm"
         :model="addForm"
         :rules="rules"
@@ -17,15 +17,15 @@
         <el-form-item label="分类名称：" prop="name">
           <el-input
             v-model="addForm.name"
-            style="width:600px;margin-right:10px "
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类名称"
-            @blur="findNames"
+            @blur="findName"
           ></el-input>
         </el-form-item>
         <el-form-item label="分类描述：" prop="description">
           <el-input
             v-model="addForm.description"
-            style="width:600px;margin-right:10px"
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类描述"
           ></el-input>
         </el-form-item>
@@ -33,11 +33,11 @@
         <el-form-item label="排序：" prop="sort">
           <el-input
             v-model="addForm.sort"
-            style="width:600px;margin-right:10px "
+            style="width: 600px; margin-right: 10px"
             placeholder="请输入分类排序"
           ></el-input>
         </el-form-item>
-        <el-form-item label="缩略图：" prop="image">
+        <el-form-item label="缩略图：" prop="icon">
           <el-upload
             class="avatar-uploader"
             action="http://res.chainmall.pro/img/saveImage/image"
@@ -45,27 +45,27 @@
             :show-file-list="false"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="addForm.image" :src="addForm.image" class="avatar" />
+            <img v-if="addForm.icon" :src="addForm.icon" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-
-        <el-form-item label="是否首页：">
-          <el-radio-group v-model="addForm.isHome">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
-          </el-radio-group>
-        </el-form-item>
         <el-form-item label="是否推荐：">
           <el-radio-group v-model="addForm.isRecommend">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
+            <el-radio label="1">是</el-radio>
+            <el-radio label="0">否</el-radio>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :disabled="isDisabled" @click="subChange('addForm')">立即提交</el-button>
-          <el-button style="margin-left:160px" @click="resetForm('addForm')">重置</el-button>
+          <el-button
+            type="primary"
+            :disabled="isDisabled"
+            @click="subChange('addForm')"
+            >立即提交</el-button
+          >
+          <el-button style="margin-left: 160px" @click="resetForm('addForm')"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -74,25 +74,27 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { editShopClass, findShopClassById,findName } from "../../../network/commodity";
+import tinymce from "../../../components/tinymce/tinymce";
+import { addSysGoodsClass, getMedia,findNames } from "../../../network/commodity";
 export default {
+  components: { tinymce },
   data() {
     return {
+      coverImg: "",
       addForm: {
         name: "",
         description: "",
         sort: "",
-        image: "",
-        isHome: "",
-        isRecommend: "",
-        id:""
+        isHome:"1",
+        icon: "",
+        isRecommend: "1",
       },
       isDisabled: false,
       rules: {
         name: [{ required: true, message: "分类名称不能为空" }],
         description: [{ required: true, message: "分类描述不能为空" }],
         sort: [{ required: true, message: "分类排序不能为空" }],
-        image: [{ required: true, message: "缩略图不能为空" }],
+        icon: [{ required: true, message: "缩略图不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -100,13 +102,13 @@ export default {
   },
 
   methods: {
-       // 判断名字是否重复
-    findNames() {
-      let obj = this.$qs.stringify({
+    // 判断名字是否重复
+    findName() {
+      let obj = {
         name: this.addForm.name,
-      });
-      findName(obj).then((res) => {
-        if (res.msg == "此分类已存在") {
+      };
+      findNames(obj).then((res) => {
+        if (res.msg == "分类名已存在") {
           this.$message.error("此分类已存在");
         } else {
           this.$message({
@@ -119,7 +121,7 @@ export default {
     // 上传直播背景
     handlephoto(res, file) {
       console.log(res);
-      this.addForm.image = "http://res.chainmall.pro/" + res.data;
+      this.addForm.icon = "http://res.chainmall.pro/" + res.data;
       let path = res.data;
       let obj = {
         path: path,
@@ -138,17 +140,17 @@ export default {
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.addForm.image = this.addForm.image.slice(25);
+          this.addForm.icon = this.addForm.icon.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editShopClass(obj).then((res) => {
+          addSysGoodsClass(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/merClass" });
+              this.$router.push({ path: "/commodity/exClass" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -163,18 +165,7 @@ export default {
       this.$refs[ruleForm].resetFields();
     },
   },
-  created() {
-    let obj = {
-      id: this.$route.query.id,
-    };
-    findShopClassById(obj).then((res) => {
-      console.log(res);
-      this.addForm = res.data;
-       this.addForm.id= this.$route.query.id
-      this.addForm.isHome=res.data.isHome.toString()
-      this.addForm.isRecommend=res.data.isRecommend.toString()
-    });
-  },
+  mounted() {},
 };
 </script>
 <style lang="less">
@@ -201,7 +192,7 @@ export default {
   border-left: 2px solid #009688;
   margin-bottom: 10px;
 }
-.editShopClass {
+.addSysGoodsClass {
   padding: 15px;
   .el-radio__inner {
     width: 20px;

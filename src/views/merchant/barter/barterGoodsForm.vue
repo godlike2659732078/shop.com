@@ -194,6 +194,29 @@ export default {
   padding: 10px 15px;
   border-bottom: 1px solid #ebeef5;
 }
+.checkTable {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: Center;
+  overflow: hidden;
+  .el-dialog {
+    margin: 20 auto !important;
+    height: 60%;
+    overflow: hidden;
+    .el-dialog__body {
+      position: absolute;
+      left: 0;
+      top: 54px;
+      bottom: 0;
+      right: 0;
+      padding: 0px 20px;
+      z-index: 1;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+  }
+}
 .userList_table {
   th {
     padding: 0 !important; //必须加important，不然覆盖优先级不够高

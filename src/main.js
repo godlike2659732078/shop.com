@@ -6,6 +6,11 @@ import './assets/css/font-awesome.min.css'
 import 'element-ui/lib/theme-chalk/index.css';
 import BMap from 'vue-baidu-map'
 import vueJsonp from 'vue-jsonp'
+import VueQuillEditor from 'vue-quill-editor'
+Vue.use(VueQuillEditor);
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 Vue.use(vueJsonp)
 Vue.use(BMap, {
     ak: 'ZMhYvyVM8QNq6LEK1Y8XttUAAfelO7Ik'

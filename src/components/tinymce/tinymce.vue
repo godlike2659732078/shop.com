@@ -41,6 +41,7 @@ export default {
   data() {
     return {
       init: {
+        
         paste_webkit_styles: true,
         paste_data_images: true, //  设置为允许粘帖图片
         images_upload_url: "/upload/file/tinymce", //  图片上传地址
@@ -68,8 +69,9 @@ export default {
   },
   mounted() {
      this.tinymceInit = {
+     
         language: "zh_CN",
-        height: 600,
+        height: 800,
         theme: "silver",
         browser_spellcheck: true, // 拼写检查
         branding: true, // 去水印

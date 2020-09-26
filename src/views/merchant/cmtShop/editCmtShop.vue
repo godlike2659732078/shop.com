@@ -8,7 +8,7 @@
       <el-form
         :label-position="labelPosition"
         label-width="100px"
-        style="padding:0px 60px"
+        style="padding: 0px 60px"
         ref="editForm"
         :model="editForm"
         :rules="rules"
@@ -17,14 +17,14 @@
         <el-form-item label="商家名称：" prop="name">
           <el-input
             v-model="editForm.name"
-            style="width:400px;margin-right:10px "
+            style="width: 400px; margin-right: 10px"
             placeholder="请输入商家名称"
           ></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="phone">
           <el-input
             v-model="editForm.phone"
-            style="width:200px;margin-right:10px "
+            style="width: 200px; margin-right: 10px"
             placeholder="请输入联系电话"
           ></el-input>
         </el-form-item>
@@ -47,7 +47,11 @@
             :show-file-list="false"
             :on-success="handlephotoOne"
           >
-            <img v-if="editForm.photoOne" :src="editForm.photoOne" class="avatar" />
+            <img
+              v-if="editForm.photoOne"
+              :src="editForm.photoOne"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -58,7 +62,11 @@
             :show-file-list="false"
             :on-success="handlephotoTwo"
           >
-            <img v-if="editForm.photoTwo" :src="editForm.photoTwo" class="avatar" />
+            <img
+              v-if="editForm.photoTwo"
+              :src="editForm.photoTwo"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -69,14 +77,18 @@
             :show-file-list="false"
             :on-success="handlephotoThree"
           >
-            <img v-if="editForm.photoThree" :src="editForm.photoThree" class="avatar" />
+            <img
+              v-if="editForm.photoThree"
+              :src="editForm.photoThree"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item label="所在城市" prop="city">
           <el-input
             v-model="editForm.city"
-            style="width:200px;margin-right:10px "
+            style="width: 200px; margin-right: 10px"
             placeholder="请输入所在城市"
           ></el-input>
         </el-form-item>
@@ -84,29 +96,59 @@
           <el-input
             v-model="editForm.address"
             type="textarea"
-            style="width:400px;margin-right:10px "
+            style="width: 400px; margin-right: 10px"
             placeholder="请输入商家地址"
           ></el-input>
         </el-form-item>
         <el-form-item label="商家坐标：" prop="coordinates">
           <el-input
             v-model="editForm.coordinates"
-            style="width:300px;margin-right:10px "
+            style="width: 300px; margin-right: 10px"
             placeholder="请输入商家坐标"
             disabled
           ></el-input>
-          <el-button type="primary" size="small" @click="chooseMap(editForm.id)">地图上选择</el-button>
+          <el-button type="primary" size="small" @click="chooseMap(editForm.id)"
+            >地图上选择</el-button
+          >
         </el-form-item>
         <el-form-item label="内容：">
-           <tinymce ref="editor" v-model="editForm.particulars" />
+          <el-upload
+              class="avatar-uploader"
+              v-show="false"
+              id="quill-upload"
+              action="http://res.chainmall.pro/img/saveImage/image"
+              list-type="picture"
+              :show-file-list="false"
+              :before-upload="beforeUpload"
+              :on-success="handleExceed"
+            >
+              <el-button size="small" type="primary"></el-button>
+            </el-upload>
+            <el-row v-loading="uillUpdateImg">
+              <quillEditor
+                ref="myQuillEditor"
+                @change="onEditorChange($event)"
+                v-model="value_editor"
+                :options="editorOption"
+              />
+            </el-row>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="subChange('editForm',editForm.id)">立即提交</el-button>
-          <el-button style="margin-left:160px" @click="resetForm('editForm')">重置</el-button>
+          <el-button type="primary" @click="subChange('editForm', editForm.id)"
+            >立即提交</el-button
+          >
+          <el-button style="margin-left: 160px" @click="resetForm('editForm')"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
       <!-- 备注信息弹窗 -->
-      <el-dialog width="600px" style="height:800px" title="选择地点" :visible.sync="showMap">
+      <el-dialog
+        width="600px"
+        style="height: 800px"
+        title="选择地点"
+        :visible.sync="showMap"
+      >
         <div id="allMap"></div>
       </el-dialog>
     </div>
@@ -117,10 +159,52 @@
 import { TimeSelect } from "element-ui";
 import tinymce from "../../../components/tinymce/tinymce";
 import { updateCmtShop, findCmtShopById } from "../../../network/merchant";
+import { quillEditor } from "vue-quill-editor";
+// 工具栏配置
+const toolbarOptions = [
+  ["bold", "italic", "underline", "strike"], // toggled buttons
+  ["blockquote", "code-block"],
+
+  [{ header: 1 }, { header: 2 }], // custom button values
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ script: "sub" }, { script: "super" }], // superscript/subscript
+  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+  [{ direction: "rtl" }], // text direction
+
+  [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+  [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+  [{ font: [] }],
+  [{ align: [] }],
+  ["link", "image", "video"],
+  ["clean"],
+]; // remove formatting button
 export default {
-  components: { tinymce },
+  components: { quillEditor },
   data() {
     return {
+      content: "",
+      uillUpdateImg: false, //根据图片上传状态来确定是否显示loading动画
+      serverUrl: "", //上传的图片服务器地址
+      value_editor: this.content, //富文本内容
+      editorOption: {
+        modules: {
+          toolbar: {
+            container: toolbarOptions, // 工具栏
+            handlers: {
+              image: function (value_editor) {
+                if (value_editor) {
+                  // 给个点击触发Element-ui，input框选择图片文件
+                  document.querySelector("#quill-upload input").click();
+                } else {
+                  this.quill.format("image", false);
+                }
+              },
+            },
+          },
+        },
+      },
       defaultMsg: "", // 富文本默认提示信息
       showMap: false,
       editForm: {
@@ -133,8 +217,8 @@ export default {
         city: "",
         address: "",
         coordinates: "",
-        particulars:"",
-        id:null,
+        particulars: "",
+        id: null,
       },
       rules: {
         name: [{ required: true, message: "商家名称不能为空" }],
@@ -149,12 +233,36 @@ export default {
   },
 
   methods: {
-    //   // 鼠标单击的事件
-    // 	onClick (e, editor) {
-    // 		console.log('Element clicked')
-    // 		console.log(e)
-    // 		console.log(editor)
-    // 	},
+    onEditorChange({ quill, html, text }) {
+      //富文本编辑器内容发生改变的时候
+      this.value_editor = html;
+      this.$emit("textChange", html); //将富文本编辑器输入的文本发送给父组件，父组件涉及提交添加或者更改
+    },
+    beforeUpload() {
+      //上传图片之前开启loading
+      this.uillUpdateImg = true;
+    },
+    handleExceed(response, file, fileList) {
+      //图片添加成功
+      let quill = this.$refs.myQuillEditor.quill;
+      console.log(response);
+      if (response.code === 0) {
+        let length = quill.getSelection().index;
+        // 插入图片 response.data.url为服务器返回的图片地址
+        quill.insertEmbed(
+          length,
+          "image",
+          "http://res.chainmall.pro/" + response.data
+        );
+        // 调整光标到最后
+        quill.setSelection(length + 1);
+      } else {
+        this.$message.error("图片插入失败");
+      }
+
+      this.uillUpdateImg = false;
+    },
+
     // 上传商家头像
     handlephoto(res, file) {
       this.editForm.photo = "http://res.chainmall.pro/" + res.data;
@@ -242,6 +350,7 @@ export default {
           this.editForm.photoOne = this.editForm.photoOne.slice(25);
           this.editForm.photoTwo = this.editForm.photoTwo.slice(25);
           this.editForm.photoThree = this.editForm.photoThree.slice(25);
+          this.editForm.particulars=this.value_editor
           let obj = this.$qs.stringify(this.editForm);
           updateCmtShop(obj).then((res) => {
             console.log(res);
@@ -267,13 +376,14 @@ export default {
     },
   },
   created() {
-    this.editForm.id=this.$route.query.id;
+    this.editForm.id = this.$route.query.id;
     let obj = {
       id: this.$route.query.id,
     };
     findCmtShopById(obj).then((res) => {
       console.log(res);
-      this.editForm=res.data
+      this.editForm = res.data;
+      this.value_editor=res.data.particulars
     });
   },
 };

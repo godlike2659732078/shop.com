@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">商家商品分类</p>
+    <p class="table_title">银行管理</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -10,10 +10,23 @@
           <el-button
             type="primary"
             size="large"
-            style="border:none;border-radius:2px;margin-right:10px"
+            style="border: none; border-radius: 2px; margin-right: 10px"
             @click="gotoAdd"
             icon="el-icon-plus"
-          >增加</el-button>
+            >增加</el-button
+          >
+          <el-button
+            type="warning"
+            size="large"
+            style="
+              background-color: #ff5722;
+              border: none;
+              border-radius: 2px;
+              margin-right: 10px;
+            "
+            @click="frozen"
+            >批量删除</el-button
+          >
         </div>
         <el-table
           ref="multipleTable"
@@ -21,78 +34,108 @@
           tooltip-effect="dark"
           style="width:100% overflow:scroll"
           class="userList_table"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column type="index" align="center" label="序号" width="50"></el-table-column>
-          <el-table-column align="center" label="缩略图" width="100">
+          <el-table-column
+            align="center"
+            type="selection"
+            width="55"
+          ></el-table-column>
+        
+          <el-table-column align="center" label="图标" width="80">
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
-                v-if="scope.row.image"
-                :src="scope.row.image"
-                style="margin-left:10px;display:block;width:30px;"
+                v-if="scope.row.bankLogo"
+                :src="scope.row.bankLogo"
+                style="margin-left: 10px; display: block; width: 30px;height:30px"
                 alt
               />
             </template>
           </el-table-column>
 
-          <el-table-column align="center" prop="name" label="分类名称" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="sort" label="排序" width="80"></el-table-column>
-
-          <el-table-column align="center" prop="status" label="展示在首页" width="100">
+          <el-table-column
+            align="center"
+            prop="bankName"
+            label="银行名"
+           
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+         
+          <el-table-column
+            align="center"
+            prop="status"
+            label="状态"
+            width="100"
+          >
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.isHome==1"
+                v-if="scope.row.isOpen == 1"
                 type="warning"
                 size="mini"
-                style="background-color:#1e9fff;border:none;border-radius:2px;margin-right:10px"
-              >展示</el-button>
+                style="
+                  background-color: #1e9fff;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >开启</el-button
+              >
               <el-button
                 v-else
                 type="warning"
                 size="mini"
-                style="background-color:#ffb800;border:none;border-radius:2px;margin-right:10px"
-              >不展示</el-button>
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >关闭</el-button
+              >
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="status" label="是否推荐" width="100">
-            <template slot-scope="scope">
-              <el-button
-                v-if="scope.row.isRecommend==1"
-                type="warning"
-                size="mini"
-                style="background-color:#1e9fff;border:none;border-radius:2px;margin-right:10px"
-              >推荐</el-button>
-              <el-button
-                v-else
-                type="warning"
-                size="mini"
-                style="background-color:#ffb800;border:none;border-radius:2px;margin-right:10px"
-              >不推荐</el-button>
-            </template>
-          </el-table-column>
+         
           <el-table-column
             align="center"
             prop="createTime"
-            label="操作时间"
+            label="加入时间"
             fixed="right"
             width="180px"
           ></el-table-column>
-          <el-table-column align="center" label="操作" fixed="right" width="160px">
+          <el-table-column
+            align="center"
+            label="操作"
+            fixed="right"
+            width="160px"
+          >
             <template slot-scope="scope">
               <el-button
                 type="warning"
                 size="mini"
-                style="background-color:#009688;border:none;border-radius:2px;margin-right:10px"
+                style="
+                  background-color: #009688;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
                 icon="el-icon-edit"
                 @click="eidt(scope.row)"
-              >编辑</el-button>
+                >编辑</el-button
+              >
               <el-button
                 type="warning"
                 size="mini"
-                style="background-color:#ff5722;border:none;border-radius:2px;margin-right:10px"
+                style="
+                  background-color: #ff5722;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
                 icon="el-icon-delete"
                 @click="delOne(scope.row)"
-              >删除</el-button>
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -112,8 +155,9 @@
 </template>
 
 <script>
+import axios from "axios";
 import { TimeSelect } from "element-ui";
-import { getmerClass,delShopClass } from "../../../network/commodity";
+import { findAllBanks,delBankByIds,delBankById} from "../../../network/platform";
 export default {
   components: {},
   data() {
@@ -130,25 +174,94 @@ export default {
       index: "",
     };
   },
+  watch: {
+    page() {
+      let obj = {
+        limit: this.limit,
+        page: this.page,
+      };
+      findAllBanks(obj).then((res) => {
+        console.log(res);
+        this.tableData = res.data;
+        this.pages = res.count;
+      });
+    },
+    limit() {
+      let obj = {
+        limit: this.limit,
+        page: this.page,
+      };
+      findAllBanks(obj).then((res) => {
+        console.log(res);
+        this.tableData = res.data;
+        this.pages = res.count;
+      });
+    },
+  },
   methods: {
-    // 获取列表
+ // 获取列表
     getList() {
       let obj = {
         page: this.page,
         limit: this.limit,
       };
-      getmerClass(obj).then((res) => {
+      findAllBanks(obj).then((res) => {
         //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
     },
+    // 多选
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+      console.log(this.multipleSelection);
+    },
+    // 批量冻结事件
+    frozen() {
+      if (this.multipleSelection.length != 0) {
+        this.$confirm("确认批量删除轮播？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            let ids = [];
+            for (let item in this.multipleSelection) {
+              ids.push(this.multipleSelection[item].id);
+            }
+            ids = "(" + ids.toString() + ")";
+            console.log(ids);
+            let obj = this.$qs.stringify({
+              ids: ids,
+              status: 1,
+            });
+           
+              delBankByIds(obj).then((res) => {
+                console.log(res);
+                this.$message({
+                  type: "success",
+                  message: res.msg,
+                });
+                this.getList();
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "取消操作",
+            });
+          });
+      } else {
+        return;
+      }
+    },
+   
 
     // 点击编辑事件
     eidt(res) {
-      console.log(res)
+      console.log(res);
       this.$router.push({
-        path: "/commodity/merClass/edit",
+        path: "/platform/bank/edit",
         query: {
           id: res.id,
         },
@@ -157,7 +270,7 @@ export default {
 
     // 删除单个商家
     delOne(res) {
-      this.$confirm("是否删除该分类？", "提示", {
+      this.$confirm("是否删除该轮播？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -166,7 +279,7 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delShopClass(obj).then((res) => {
+          delBankById(obj).then((res) => {
             // //console.log(res);
             this.$message({
               type: "success",
@@ -191,7 +304,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/commodity/merClass/add" });
+      this.$router.push({ path: "/platform/bank/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -200,10 +313,11 @@ export default {
 
   created() {
     let obj = {
-      parentId: 0,
+      page:this.page,
+      limit:this.limit
     };
-    getmerClass(obj).then((res) => {
-      //console.log(res);
+    findAllBanks(obj).then((res) => {
+      console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });

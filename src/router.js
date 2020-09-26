@@ -86,8 +86,73 @@ const editmerClass = () =>
     import('./views/commodity/merClass/edit.vue')
 const exchange = () =>
     import('./views/commodity/exchange/index')
-    const exchange_add = () =>
+const exchange_add = () =>
     import('./views/commodity/exchange/add.vue')
+const exchange_edit = () =>
+    import('./views/commodity/exchange/edit.vue')
+const commodity_merchant = () =>
+    import('./views/commodity/merchant/index')
+const commodity_merchant_add = () =>
+    import('./views/commodity/merchant/add.vue')
+const commodity_merchant_edit = () =>
+    import('./views/commodity/merchant/edit.vue')
+const commodity_merchant_opadd = () =>
+    import('./views/commodity/merchant/opadd.vue')
+const exClass = () =>
+    import('./views/commodity/exClass/index')
+const addexClass = () =>
+    import('./views/commodity/exClass/addexclass.vue')
+const editexClass = () =>
+    import('./views/commodity/exClass/edit.vue')
+const tag = () =>
+    import('./views/commodity/tag/index')
+const addTag = () =>
+    import('./views/commodity/tag/addTag.vue')
+const editTag = () =>
+    import('./views/commodity/tag/edit.vue')
+const commodity_check = () =>
+    import('./views/commodity/check/index.vue')
+const commodity_passcheck = () =>
+    import('./views/commodity/check/form.vue')
+const seckill = () =>
+    import('./views/commodity/seckill/index')
+const seckill_add = () =>
+    import('./views/commodity/seckill/add.vue')
+const seckill_edit = () =>
+    import('./views/commodity/seckill/edit.vue')
+const recommended = () =>
+    import('./views/commodity/recommended/index')
+const recommended_add = () =>
+    import('./views/commodity/recommended/add.vue')
+const recommended_edit = () =>
+    import('./views/commodity/recommended/edit.vue')
+const shopCoupon = () =>
+    import('./views/commodity/shopCoupon/index')
+const shopCoupon_edit = () =>
+    import('./views/commodity/shopCoupon/edit')
+const banner = () =>
+    import('./views/platform/banner/index')
+const banner_add = () =>
+    import('./views/platform/banner/addBanner.vue')
+const banner_edit = () =>
+    import('./views/platform/banner/edit.vue')
+const bank = () =>
+    import('./views/platform/bank/index')
+const bank_add = () =>
+    import('./views/platform/bank/addBank.vue')
+const bank_edit = () =>
+    import('./views/platform/bank/edit.vue')
+const blogroll = () =>
+    import('./views/platform/blogroll/index')
+const blogroll_add = () =>
+    import('./views/platform/blogroll/addblogroll.vue')
+const blogroll_edit = () =>
+    import('./views/platform/blogroll/edit.vue')
+
+
+
+
+// ________________________________________________
 // ________________________________________________
 
 const department = () =>
@@ -376,7 +441,7 @@ export default new Router({
             },
             {
                 path: '/merchant/cmtShop/add',
-                name: 'cmtShop',
+                name: 'cmtShop_add',
                 meta: {
 
                 },
@@ -384,7 +449,7 @@ export default new Router({
             },
             {
                 path: '/merchant/cmtShop/form',
-                name: 'cmtShop',
+                name: 'cmtShop_edit',
                 meta: {
                 },
                 component: cmtShop_edit
@@ -464,8 +529,233 @@ export default new Router({
             {
                 path: '/commodity/exchange/add',
                 name: 'exchange_add',
+                meta: {
+                    title: "添加兑换商品"
+                },
                 component: exchange_add
             },
+            {
+                path: '/commodity/exchange/edit',
+                name: 'exchange_edit',
+                component: exchange_edit
+            },
+            {
+                path: '/commodity/merchant',
+                name: 'commodity_merchant',
+                meta: {
+                    title: "商家商品"
+                },
+                component: commodity_merchant
+            },
+            {
+                path: '/commodity/merchant/add',
+                name: 'commodity_merchant_add',
+                meta: {
+                    title: "添加产品"
+                },
+                component: commodity_merchant_add
+            },
+            {
+                path: '/commodity/merchant/edit',
+                name: 'commodity_merchant_edit',
+                component: commodity_merchant_edit
+            },
+            {
+                path: '/commodity/merchant/opadd',
+                name: 'commodity_merchant_opadd',
+                component: commodity_merchant_opadd
+            },
+            {
+                path: '/commodity/exClass',
+                name: 'exClass',
+                meta: {
+                    title: "兑换商品分类"
+                },
+                component: exClass
+            },
+            {
+                path: '/commodity/exClass/add',
+                name: 'addexClass',
+                meta: {
+
+                },
+                component: addexClass
+            },
+            {
+                path: '/commodity/exClass/edit',
+                name: 'editexClass',
+                meta: {
+
+                },
+                component: editexClass
+            },
+            {
+                path: '/commodity/tag',
+                name: 'tag',
+                meta: {
+                    title: "商品标签"
+                },
+                component: tag
+            },
+            {
+                path: '/commodity/tag/add',
+                name: 'addTag',
+                meta: {
+
+                },
+                component: addTag
+            },
+            {
+                path: '/commodity/tag/edit',
+                name: 'editTag',
+                meta: {
+
+                },
+                component: editTag
+            },
+            {
+                path: '/commodity/check',
+                name: 'commodity_check',
+                meta: {
+                    title: "审核商品"
+                },
+                component: commodity_check
+            },
+            {
+                path: '/commodity/check/form',
+                name: 'commodity_passcheck',
+                component: commodity_passcheck
+            },
+            {
+                path: '/commodity/seckill',
+                name: 'seckill',
+                meta: {
+                    title: "限时秒杀"
+                },
+                component: seckill
+            },
+            {
+                path: '/commodity/seckill/add',
+                name: 'seckill_add',
+                meta: {
+                    title: "添加秒杀商品"
+                },
+                component: seckill_add
+            },
+            {
+                path: '/commodity/seckill/edit',
+                name: 'seckill_edit',
+                component: seckill_edit
+            },
+            {
+                path: '/commodity/recommended',
+                name: 'recommended',
+                meta: {
+                    title: "链上推荐"
+                },
+                component: recommended
+            },
+            {
+                path: '/commodity/recommended/add',
+                name: 'recommended_add',
+                meta: {
+                    title: "添加推荐商品"
+                },
+                component: recommended_add
+            },
+            {
+                path: '/commodity/recommended/edit',
+                name: 'recommended_edit',
+                component: recommended_edit
+            },
+            {
+                path: '/commodity/shopCoupon',
+                name: 'shopCoupon',
+                meta: {
+                    title: "商品优惠券"
+                },
+                component: shopCoupon
+            },
+            {
+                path: '/commodity/shopCoupon/edit',
+                name: 'shopCoupon_edit',
+
+                component: shopCoupon_edit
+            },
+            {
+                path: '/platform/banner',
+                name: 'banner',
+                meta: {
+                    title: "轮播管理"
+                },
+                component: banner
+            },
+            {
+                path: '/platform/banner/add',
+                name: 'addBanner',
+                meta: {
+                    title: "添加轮播"
+                },
+                component: banner_add
+            },
+            {
+                path: '/platform/banner/edit',
+                name: 'editBanner',
+                meta: {
+
+                },
+                component: banner_edit
+            },
+            {
+                path: '/platform/bank',
+                name: 'bank',
+                meta: {
+                    title: "银行管理"
+                },
+                component: bank
+            },
+            {
+                path: '/platform/bank/add',
+                name: 'bank_add',
+                meta: {
+                    title: "添加银行"
+                },
+                component: bank_add
+            },
+            {
+                path: '/platform/bank/edit',
+                name: 'bank_edit',
+                meta: {
+
+                },
+                component: bank_edit
+            },
+            {
+                path: '/platform/blogroll',
+                name: 'bank',
+                meta: {
+                    title: "友情链接"
+                },
+                component: blogroll
+            },
+            {
+                path: '/platform/blogroll/add',
+                name: 'blogroll_add',
+                meta: {
+                    title: "添加友情链接"
+                },
+                component: blogroll_add
+            },
+            {
+                path: '/platform/blogroll/edit',
+                name: 'blogroll_edit',
+                meta: {
+
+                },
+                component: blogroll_edit
+            },
+
+
 
             // ————————————————————————————————————————————————————————————————————
             {

@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加商品分类</p>
+    <p class="table_title">编辑商品标签</p>
     <!-- 搜索列表 -->
     <div class="editShopClass">
       <!-- 编辑用户信息列表 -->
@@ -14,19 +14,18 @@
         :rules="rules"
         :index="index"
       >
-        <el-form-item label="分类名称：" prop="name">
+        <el-form-item label="标签名称：" prop="title">
           <el-input
-            v-model="addForm.name"
+            v-model="addForm.title"
             style="width:600px;margin-right:10px "
-            placeholder="请输入分类名称"
-            @blur="findNames"
+            placeholder="请输入标签名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="分类描述：" prop="description">
+        <el-form-item label="标签描述：" prop="description">
           <el-input
             v-model="addForm.description"
             style="width:600px;margin-right:10px"
-            placeholder="请输入分类描述"
+            placeholder="请输入标签描述"
           ></el-input>
         </el-form-item>
 
@@ -34,7 +33,7 @@
           <el-input
             v-model="addForm.sort"
             style="width:600px;margin-right:10px "
-            placeholder="请输入分类排序"
+            placeholder="请输入标签排序"
           ></el-input>
         </el-form-item>
         <el-form-item label="缩略图：" prop="image">
@@ -43,23 +42,21 @@
             action="http://res.chainmall.pro/img/saveImage/image"
             :on-success="handlephoto"
             :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
           >
             <img v-if="addForm.image" :src="addForm.image" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-
-        <el-form-item label="是否首页：">
+         <el-form-item label="是否首页：">
           <el-radio-group v-model="addForm.isHome">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
+            <el-radio label="true">是</el-radio>
+            <el-radio label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否推荐：">
           <el-radio-group v-model="addForm.isRecommend">
-            <el-radio label=1>是</el-radio>
-            <el-radio label=0>否</el-radio>
+            <el-radio label="true">是</el-radio>
+            <el-radio label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -74,25 +71,25 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import { editShopClass, findShopClassById,findName } from "../../../network/commodity";
+import { updateTaxonomyById, findTaxonomyById } from "../../../network/commodity";
 export default {
   data() {
     return {
       addForm: {
-        name: "",
+        title: "",
         description: "",
         sort: "",
         image: "",
-        isHome: "",
-        isRecommend: "",
+        isHome:"true",
+        isRecommend: "true",
         id:""
       },
       isDisabled: false,
       rules: {
-        name: [{ required: true, message: "分类名称不能为空" }],
-        description: [{ required: true, message: "分类描述不能为空" }],
-        sort: [{ required: true, message: "分类排序不能为空" }],
-        image: [{ required: true, message: "缩略图不能为空" }],
+        title: [{ required: true, message: "标签名称不能为空" }],
+        description: [{ required: true, message: "标签描述不能为空" }],
+        sort: [{ required: true, message: "标签排序不能为空" }],
+        icon: [{ required: true, message: "缩略图不能为空" }],
       },
       labelPosition: "left",
       index: "",
@@ -100,22 +97,6 @@ export default {
   },
 
   methods: {
-       // 判断名字是否重复
-    findNames() {
-      let obj = this.$qs.stringify({
-        name: this.addForm.name,
-      });
-      findName(obj).then((res) => {
-        if (res.msg == "此分类已存在") {
-          this.$message.error("此分类已存在");
-        } else {
-          this.$message({
-            type: "success",
-            message: res.msg,
-          });
-        }
-      });
-    },
     // 上传直播背景
     handlephoto(res, file) {
       console.log(res);
@@ -125,15 +106,7 @@ export default {
         path: path,
       };
     },
-    beforeAvatarUpload(file) {
-      console.log(file.size);
-      let isLt80K = file.size / 1024 < 80;
 
-      if (!isLt80K) {
-        this.$message.error("商品图片大小不能超过 80kb!");
-        return false;
-      }
-    },
 
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
@@ -141,14 +114,14 @@ export default {
           this.addForm.image = this.addForm.image.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editShopClass(obj).then((res) => {
+          updateTaxonomyById(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/commodity/merClass" });
+              this.$router.push({ path: "/commodity/tag" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -167,7 +140,7 @@ export default {
     let obj = {
       id: this.$route.query.id,
     };
-    findShopClassById(obj).then((res) => {
+    findTaxonomyById(obj).then((res) => {
       console.log(res);
       this.addForm = res.data;
        this.addForm.id= this.$route.query.id
