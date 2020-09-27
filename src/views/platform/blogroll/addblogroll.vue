@@ -14,11 +14,11 @@
         :rules="rules"
         :index="index"
       >
-        <el-form-item label="轮播主题：" prop="title">
+        <el-form-item label="标题：" prop="name">
           <el-input
-            v-model="addForm.title"
+            v-model="addForm.name"
             style="width: 600px; margin-right: 10px"
-            placeholder="请输入轮播主题"
+            placeholder="请输入链接标题"
           ></el-input>
         </el-form-item>
         <el-form-item label="跳转路径：" prop="url">
@@ -33,7 +33,7 @@
           <el-input
             v-model="addForm.sort"
             style="width: 600px; margin-right: 10px"
-            placeholder="请输入分类排序"
+            placeholder="请输入排序"
           ></el-input>
         </el-form-item>
         <el-form-item label="缩略图：" prop="image">
@@ -58,14 +58,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="展示位置：">
-          <el-radio-group v-model="addForm.isHome">
-            <el-radio label="1">首页</el-radio>
-            <el-radio label="0">发现</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
         <el-form-item>
           <el-button
             type="primary"
@@ -85,7 +77,7 @@
 <script>
 import { TimeSelect } from "element-ui";
 import tinymce from "../../../components/tinymce/tinymce";
-import {  addBanner } from "../../../network/platform";
+import { addFriendLink } from "../../../network/platform";
 export default {
   components: { tinymce },
   data() {
@@ -93,28 +85,27 @@ export default {
       options: [
         {
           value: "WEB",
-          label: "WEB",
+          label: "外链",
         },
         {
           value: "NATIVE",
-          label: "NATIVE",
+          label: "本地",
         },
       ],
 
       coverImg: "",
       addForm: {
-        title: "",
+        name: "",
         url: "",
         sort: "",
-        isHome: "1",
         image: "",
         type: "WEB",
       },
       isDisabled: false,
       rules: {
-        title: [{ required: true, message: "标签名称不能为空" }],
-        url: [{ required: true, message: "分类描述不能为空" }],
-        sort: [{ required: true, message: "分类排序不能为空" }],
+        name: [{ required: true, message: "标题不能为空" }],
+        url: [{ required: true, message: "跳转路径不能为空" }],
+        sort: [{ required: true, message: "排序不能为空" }],
         image: [{ required: true, message: "缩略图不能为空" }],
       },
       labelPosition: "left",
@@ -139,14 +130,14 @@ export default {
           this.addForm.image = this.addForm.image.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          addBanner(obj).then((res) => {
+          addFriendLink(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/platform/banner" });
+              this.$router.push({ path: "/platform/blogroll" });
             } else {
               this.$message.error("操作失败！");
             }

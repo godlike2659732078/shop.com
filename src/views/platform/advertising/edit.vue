@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">编辑轮播</p>
+    <p class="table_title">编辑广告</p>
     <!-- 搜索列表 -->
     <div class="addTaxonomy">
       <!-- 编辑用户信息列表 -->
@@ -14,12 +14,24 @@
         :rules="rules"
         :index="index"
       >
-        <el-form-item label="轮播主题：" prop="title">
+        <el-form-item label="广告标题：" prop="title">
           <el-input
             v-model="addForm.title"
-            style="width: 600px; margin-right: 10px"
-            placeholder="请输入轮播主题"
+            style="width: 800px; margin-right: 10px"
+            placeholder="请输入广告标题"
           ></el-input>
+        </el-form-item>
+
+        <el-form-item label="缩略图：" prop="icon">
+          <el-upload
+            class="avatar-uploader"
+            action="http://res.chainmall.pro/img/saveImage/image"
+            :on-success="handlephoto"
+            :show-file-list="false"
+          >
+            <img v-if="addForm.image" :src="addForm.image" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="跳转路径：" prop="url">
           <el-input
@@ -28,27 +40,7 @@
             placeholder="请输入跳转路径"
           ></el-input>
         </el-form-item>
-
-        <el-form-item label="排序：" prop="sort">
-          <el-input
-            v-model="addForm.sort"
-            style="width: 600px; margin-right: 10px"
-            placeholder="请输入分类排序"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="缩略图：" prop="image">
-          <el-upload
-            class="avatar-uploader"
-            action="http://res.chainmall.pro/img/saveImage/image"
-            :on-success="handlephoto"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="addForm.image" :src="addForm.image" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="跳转类型：">
+        <el-form-item label="展示位置：">
           <el-select v-model="addForm.type" placeholder="请选择">
             <el-option
               v-for="item in options"
@@ -59,11 +51,23 @@
             </el-option>
           </el-select>
         </el-form-item>
-
+        <el-form-item label="排序：" prop="sort">
+          <el-input
+            v-model="addForm.sort"
+            style="width: 600px; margin-right: 10px"
+            placeholder="请输入分类排序"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="是否开启">
+          <el-radio-group v-model="addForm.isOpen">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="0">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="展示位置：">
           <el-radio-group v-model="addForm.isHome">
             <el-radio label="1">首页</el-radio>
-            <el-radio label="0">发现</el-radio>
+            <el-radio label="2">发现</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -85,31 +89,46 @@
 
 <script>
 import { TimeSelect } from "element-ui";
-import tinymce from "../../../components/tinymce/tinymce";
-import { findBannerById, addBanner,editBannerById } from "../../../network/platform";
+import { findAdById, editAdById } from "../../../network/platform";
+
 export default {
-  components: { tinymce },
+  components: {},
   data() {
     return {
       options: [
         {
-          value: "WEB",
-          label: "WEB",
+          value: "web",
+          label: "web",
         },
         {
-          value: "NATIVE",
-          label: "NATIVE",
+          value: "app",
+          label: "app",
         },
       ],
-
+      options_type: [
+        {
+          value: "article",
+          label: "文章",
+        },
+        {
+          value: "push",
+          label: "推送",
+        },
+        {
+          value: "notice",
+          label: "公告",
+        },
+      ],
       coverImg: "",
       addForm: {
         title: "",
         url: "",
         sort: "",
+        isOpen: "1",
         isHome: "1",
         image: "",
-        type: "WEB",
+
+        type: "web",
       },
       isDisabled: false,
       rules: {
@@ -126,37 +145,27 @@ export default {
   methods: {
     // 上传标签缩略图
     handlephoto(res, file) {
-      console.log(res);
+      //console.log(res);
       this.addForm.image = "http://res.chainmall.pro/" + res.data;
       let path = res.data;
       let obj = {
         path: path,
       };
     },
-    beforeAvatarUpload(file) {
-      console.log(file.size);
-      let isLt80K = file.size / 1024 < 80;
-
-      if (!isLt80K) {
-        this.$message.error("商品图片大小不能超过 80kb!");
-        return false;
-      }
-    },
-
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addForm.image = this.addForm.image.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editBannerById(obj).then((res) => {
-            console.log(res);
+          editAdById(obj).then((res) => {
+            //console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/platform/banner" });
+              this.$router.push({ path: "/platform/advertising" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -175,11 +184,11 @@ export default {
     let obj = {
       id: this.$route.query.id,
     };
-    console.log(obj)
-    findBannerById(obj).then((res) => {
+    findAdById(obj).then((res) => {
       console.log(res);
       this.addForm = res.data;
-    this.addForm.isHome=res.data.isHome.toString()
+      this.addForm.isOpen = res.data.isOpen.toString();
+      this.addForm.isHome = res.data.isHome.toString();
     });
   },
 };

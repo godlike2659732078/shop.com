@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">编辑友情链接</p>
+    <p class="table_title">添加友情链接</p>
     <!-- 搜索列表 -->
     <div class="addTaxonomy">
       <!-- 编辑用户信息列表 -->
@@ -14,11 +14,11 @@
         :rules="rules"
         :index="index"
       >
-        <el-form-item label="轮播主题：" prop="title">
+        <el-form-item label="标题：" prop="name">
           <el-input
-            v-model="addForm.title"
+            v-model="addForm.name"
             style="width: 600px; margin-right: 10px"
-            placeholder="请输入轮播主题"
+            placeholder="请输入链接标题"
           ></el-input>
         </el-form-item>
         <el-form-item label="跳转路径：" prop="url">
@@ -33,7 +33,7 @@
           <el-input
             v-model="addForm.sort"
             style="width: 600px; margin-right: 10px"
-            placeholder="请输入分类排序"
+            placeholder="请输入排序"
           ></el-input>
         </el-form-item>
         <el-form-item label="缩略图：" prop="image">
@@ -42,7 +42,6 @@
             action="http://res.chainmall.pro/img/saveImage/image"
             :on-success="handlephoto"
             :show-file-list="false"
-            :before-upload="beforeAvatarUpload"
           >
             <img v-if="addForm.image" :src="addForm.image" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -59,14 +58,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="展示位置：">
-          <el-radio-group v-model="addForm.isHome">
-            <el-radio label="1">首页</el-radio>
-            <el-radio label="0">发现</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
         <el-form-item>
           <el-button
             type="primary"
@@ -86,7 +77,7 @@
 <script>
 import { TimeSelect } from "element-ui";
 import tinymce from "../../../components/tinymce/tinymce";
-import { findBannerById, addBanner,editBannerById } from "../../../network/platform";
+import { findFriendLinkById,editFriendLinkById } from "../../../network/platform";
 export default {
   components: { tinymce },
   data() {
@@ -94,28 +85,27 @@ export default {
       options: [
         {
           value: "WEB",
-          label: "WEB",
+          label: "外链",
         },
         {
           value: "NATIVE",
-          label: "NATIVE",
+          label: "本地",
         },
       ],
 
       coverImg: "",
       addForm: {
-        title: "",
+        name: "",
         url: "",
         sort: "",
-        isHome: "1",
         image: "",
         type: "WEB",
       },
       isDisabled: false,
       rules: {
-        title: [{ required: true, message: "标签名称不能为空" }],
-        url: [{ required: true, message: "分类描述不能为空" }],
-        sort: [{ required: true, message: "分类排序不能为空" }],
+        name: [{ required: true, message: "标题不能为空" }],
+        url: [{ required: true, message: "跳转路径不能为空" }],
+        sort: [{ required: true, message: "排序不能为空" }],
         image: [{ required: true, message: "缩略图不能为空" }],
       },
       labelPosition: "left",
@@ -133,15 +123,6 @@ export default {
         path: path,
       };
     },
-    beforeAvatarUpload(file) {
-      console.log(file.size);
-      let isLt80K = file.size / 1024 < 80;
-
-      if (!isLt80K) {
-        this.$message.error("商品图片大小不能超过 80kb!");
-        return false;
-      }
-    },
 
     subChange(formName) {
       this.$refs[formName].validate((valid) => {
@@ -149,14 +130,14 @@ export default {
           this.addForm.image = this.addForm.image.slice(25);
           let obj = this.$qs.stringify(this.addForm);
           console.log(this.addForm);
-          editBannerById(obj).then((res) => {
+          editFriendLinkById(obj).then((res) => {
             console.log(res);
             if (res.code == 0) {
               this.$message({
                 type: "success",
                 message: res.msg,
               });
-              this.$router.push({ path: "/platform/banner" });
+              this.$router.push({ path: "/platform/blogroll" });
             } else {
               this.$message.error("操作失败！");
             }
@@ -172,15 +153,12 @@ export default {
     },
   },
   created() {
-    let obj = {
-      id: this.$route.query.id,
-    };
-    console.log(obj)
-    findBannerById(obj).then((res) => {
-      console.log(res);
-      this.addForm = res.data;
-    this.addForm.isHome=res.data.isHome.toString()
-    });
+    let obj={
+      id:this.$route.query.id
+    }
+    findFriendLinkById(obj).then(res=>{
+      this.addForm=res.data
+    })
   },
 };
 </script>

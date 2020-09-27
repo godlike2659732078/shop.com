@@ -190,7 +190,7 @@ export default {
         page: this.page,
       };
       allBanners(obj).then((res) => {
-        console.log(res);
+        //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -201,7 +201,7 @@ export default {
         page: this.page,
       };
       allBanners(obj).then((res) => {
-        console.log(res);
+        //console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -211,7 +211,8 @@ export default {
     // 获取列表
     getList() {
       let obj = {
-        parentId: 0,
+        limit: this.limit,
+        page: this.page,
       };
       allBanners(obj).then((res) => {
         //console.log(res);
@@ -222,7 +223,7 @@ export default {
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      //console.log(this.multipleSelection);
     },
     // 批量冻结事件
     frozen() {
@@ -238,14 +239,14 @@ export default {
               ids.push(this.multipleSelection[item].id);
             }
             ids = "(" + ids.toString() + ")";
-            console.log(ids);
+           // console.log(ids);
             let obj = this.$qs.stringify({
               ids: ids,
               status: 1,
             });
 
             delBannerByIds(obj).then((res) => {
-              console.log(res);
+              //console.log(res);
               this.$message({
                 type: "success",
                 message: res.msg,
@@ -265,7 +266,7 @@ export default {
     },
     // 点击编辑事件
     eidt(res) {
-      console.log(res);
+      //console.log(res);
       this.$router.push({
         path: "/platform/banner/edit",
         query: {
@@ -323,7 +324,7 @@ export default {
       page: this.page,
     };
     allBanners(obj).then((res) => {
-      console.log(res);
+      //console.log(res);
       this.tableData = res.data;
       this.pages = res.count;
     });

@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">友情链接</p>
+    <p class="table_title">广告管理</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -56,10 +56,24 @@
 
           <el-table-column
             align="center"
-            prop="name"
+            prop="title"
             label="标题"
+            width="250"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="url"
+            label="链接地址"
             width="180"
             :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="type"
+            label="链接方式"
+            width="180"
+          
           ></el-table-column>
           <el-table-column
             align="center"
@@ -69,14 +83,74 @@
           ></el-table-column>
           <el-table-column
             align="center"
-            prop="url"
-            label="链接地址"
-          ></el-table-column>
-
+            prop="status"
+            label="位置"
+            width="100"
+          >
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.isHome == 1"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #1e9fff;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >首页</el-button
+              >
+              <el-button
+                v-else
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >发现</el-button
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="status"
+            label="开启"
+            width="100"
+          >
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.isOpen == 1"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #1e9fff;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >开启</el-button
+              >
+              <el-button
+                v-else
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >关闭</el-button
+              >
+            </template>
+          </el-table-column>
           <el-table-column
             align="center"
             prop="createTime"
-            label="加入时间"
+            label="创建时间"
             fixed="right"
             width="180px"
           ></el-table-column>
@@ -134,11 +208,7 @@
 <script>
 import axios from "axios";
 import { TimeSelect } from "element-ui";
-import {
-  findallFriendLinks,
-  delfriendLinkByIds,
-  delFriendLinkById,
-} from "../../../network/platform";
+import { findallAds, delAdById, delAdByIds } from "../../../network/platform";
 export default {
   components: {},
   data() {
@@ -149,6 +219,7 @@ export default {
       multipleSelection: [],
       page: 1,
       limit: 10,
+      editForm: {},
       labelPosition: "left",
       edit: false,
       index: "",
@@ -160,7 +231,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findallAds(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -171,7 +242,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findallAds(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -182,10 +253,11 @@ export default {
     // 获取列表
     getList() {
       let obj = {
-        parentId: 0,
+        limit: this.limit,
+        page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
-        //console.log(res);
+      findallAds(obj).then((res) => {
+        console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -195,7 +267,7 @@ export default {
       this.multipleSelection = val;
       console.log(this.multipleSelection);
     },
-    // 批量删除事件
+    // 批量冻结事件
     frozen() {
       if (this.multipleSelection.length != 0) {
         this.$confirm("确认批量删除？", "提示", {
@@ -215,7 +287,7 @@ export default {
               status: 1,
             });
 
-            delfriendLinkByIds(obj).then((res) => {
+            delAdByIds(obj).then((res) => {
               console.log(res);
               this.$message({
                 type: "success",
@@ -238,7 +310,7 @@ export default {
     eidt(res) {
       console.log(res);
       this.$router.push({
-        path: "/platform/blogroll/edit",
+        path: "/platform/advertising/edit",
         query: {
           id: res.id,
         },
@@ -256,7 +328,7 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delFriendLinkById(obj).then((res) => {
+          delAdById(obj).then((res) => {
             // //console.log(res);
             this.$message({
               type: "success",
@@ -281,7 +353,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/platform/blogroll/add" });
+      this.$router.push({ path: "/platform/advertising/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -293,7 +365,7 @@ export default {
       limit: this.limit,
       page: this.page,
     };
-    findallFriendLinks(obj).then((res) => {
+    findallAds(obj).then((res) => {
       console.log(res);
       this.tableData = res.data;
       this.pages = res.count;

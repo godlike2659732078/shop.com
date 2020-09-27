@@ -146,3 +146,278 @@ export function findallFriendLinks(obj) {
         params: obj
     })
 }
+// 添加友情链接
+export function addFriendLink(obj) {
+    return request({
+        method: "post",
+        url: '/friendLink/addFriendLink',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 获取友情链接详情
+export function findFriendLinkById(obj) {
+    return request({
+        method: "get",
+        url: '/friendLink/findFriendLinkById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 提交友情链接修改
+export function editFriendLinkById(obj) {
+    return request({
+        method: "post",
+        url: '/friendLink/editFriendLinkById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 删除友情链接
+export function delFriendLinkById(obj) {
+    return request({
+        method: "post",
+        url: '/friendLink/delFriendLinkById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 批量删除友情链接
+export function delfriendLinkByIds(obj) {
+    return request({
+        method: "post",
+        url: '/friendLink/delFriendLinkByIds',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 获取公告通知列表
+export function findAllArticles(obj) {
+    return request({
+        method: "get",
+        url: '/Article/findAllArticles',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 添加通知公告
+export function addArticles(obj) {
+    return request({
+        method: "post",
+        url: '/Article/addArticles',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉去通知公告信息
+export function findArticlesById(obj) {
+    return request({
+        method: "get",
+        url: '/Article/findArticlesById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 提交编辑通知公告
+export function editArticlesById(obj) {
+    return request({
+        method: "post",
+        url: '/Article/editArticlesById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 删除公告通知
+export function delArticlesById(obj) {
+    return request({
+        method: "post",
+        url: '/Article/delArticlesById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 批量删除公告通知
+export function delArticlesByIds(obj) {
+    return request({
+        method: "post",
+        url: '/Article/delArticlesByIds',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉去广告列表
+export function findallAds(obj) {
+    return request({
+        method: "get",
+        url: '/Ad/findallAds',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 批量删除广告
+export function delAdByIds(obj) {
+    return request({
+        method: "post",
+        url: '/Ad/delAdByIds',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 删除广告
+export function delAdById(obj) {
+    return request({
+        method: "post",
+        url: '/Ad/delAdById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 添加广告
+export function addAd(obj) {
+    return request({
+        method: "post",
+        url: '/Ad/addAd',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 提交编辑广告
+export function editAdById(obj) {
+    return request({
+        method: "post",
+        url: '/Ad/editAdById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉取广告信息
+export function findAdById(obj) {
+    return request({
+        method: "get",
+        url: '/Ad/findAdById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 平台规则列表
+export function allRule(obj) {
+    return request({
+        method: "get",
+        url: '/rule/allRule',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 获取规则信息
+export function ruleOne(obj) {
+    return request({
+        method: "get",
+        url: '/rule/ruleOne',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 提交编辑规则
+export function updateRule(obj) {
+    return request({
+        method: "post",
+        url: '/rule/updateRule',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉取链商学院列表
+export function findAllCollegeActicles(obj) {
+    return request({
+        method: "get",
+        url: '/college/findAllCollegeActicles',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 拉取链商学院分类
+export function getCollegeClass(obj) {
+    return request({
+        method: "get",
+        url: '/college/findAllCollegeActicleClass',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj
+    })
+}
+// 链商学院添加
+export function addCollegeActicle(obj) {
+    return request({
+        method: "post",
+        url: '/college/addCollegeActicle',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}
+// 拉取链商学院信息
+export function findCollegeActicleById(obj_byId) {
+    return request({
+        method: "get",
+        url: '/college/findCollegeActicleById',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        params: obj_byId
+    })
+}
+// 提交链商学院编辑
+export function updateCollegeActicle(obj) {
+    return request({
+        method: "post",
+        url: '/college/updateCollegeActicle',
+        headers: {
+            Authorization: store.state.accessToken
+        },
+        data: obj
+    })
+}

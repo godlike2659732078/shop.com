@@ -20,15 +20,22 @@ export
             resolve(res.data)
             //token响应,登录超时判断
             if (store.state.accessToken == "" || store.state.accessToken == null || store.state.accessToken.length == 0 || res.data.code == 4030) {
-                Message.error("请重新登录！")
+                let doms = document.getElementsByClassName('el-message')[0]
+                if (doms == undefined) {
+                    Message.error("请重新登录！")
+                }
+
                 router.push({
                     path: "/login"
                 })
+                return false
             }
         }).catch(err => {
             reject(err)
+            let doms = document.getElementsByClassName('el-message')[0]
+            if (doms == undefined) {
             Message.error("请求出错，请稍后重试！！！")
-            router.push({ path: "/login" })
+        }
             return false
         })
     })

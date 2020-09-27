@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">友情链接</p>
+    <p class="table_title">通知管理</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -41,13 +41,18 @@
             type="selection"
             width="55"
           ></el-table-column>
-
+          <el-table-column
+            align="center"
+            prop="id"
+            label="ID"
+            width="100"
+          ></el-table-column>
           <el-table-column align="center" label="图片" width="80">
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
-                v-if="scope.row.image"
-                :src="scope.row.image"
+                v-if="scope.row.icon"
+                :src="scope.row.icon"
                 style="margin-left: 10px; display: block; width: 30px"
                 alt
               />
@@ -56,8 +61,15 @@
 
           <el-table-column
             align="center"
-            prop="name"
+            prop="title"
             label="标题"
+            width="300"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="source"
+            label="来源"
             width="180"
             :show-overflow-tooltip="true"
           ></el-table-column>
@@ -68,15 +80,61 @@
             width="80"
           ></el-table-column>
           <el-table-column
-            align="center"
-            prop="url"
-            label="链接地址"
+            align="left"
+            prop="introduce"
+            label="简介"
+            :show-overflow-tooltip="true"
           ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="status"
+            label="类型"
+            width="100"
+          >
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.type == 'push'"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #1e9fff;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >推送</el-button
+              >
+              <el-button
+                v-else-if="scope.row.type == 'article'"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >文章</el-button
+              >
+              <el-button
+                v-else-if="scope.row.type == 'notice'"
+                type="warning"
+                size="mini"
+                style="
+                  background-color: #ffb800;
+                  border: none;
+                  border-radius: 2px;
+                  margin-right: 10px;
+                "
+                >公告</el-button
+              >
+            </template>
+          </el-table-column>
 
           <el-table-column
             align="center"
             prop="createTime"
-            label="加入时间"
+            label="创建时间"
             fixed="right"
             width="180px"
           ></el-table-column>
@@ -135,9 +193,9 @@
 import axios from "axios";
 import { TimeSelect } from "element-ui";
 import {
-  findallFriendLinks,
-  delfriendLinkByIds,
-  delFriendLinkById,
+  findAllArticles,
+  delArticlesById,
+  delArticlesByIds,
 } from "../../../network/platform";
 export default {
   components: {},
@@ -149,6 +207,7 @@ export default {
       multipleSelection: [],
       page: 1,
       limit: 10,
+      editForm: {},
       labelPosition: "left",
       edit: false,
       index: "",
@@ -160,7 +219,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findAllArticles(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -171,7 +230,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findAllArticles(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -182,10 +241,11 @@ export default {
     // 获取列表
     getList() {
       let obj = {
-        parentId: 0,
+        limit: this.limit,
+        page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
-        //console.log(res);
+      findAllArticles(obj).then((res) => {
+        console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -195,7 +255,7 @@ export default {
       this.multipleSelection = val;
       console.log(this.multipleSelection);
     },
-    // 批量删除事件
+    // 批量冻结事件
     frozen() {
       if (this.multipleSelection.length != 0) {
         this.$confirm("确认批量删除？", "提示", {
@@ -215,7 +275,7 @@ export default {
               status: 1,
             });
 
-            delfriendLinkByIds(obj).then((res) => {
+            delArticlesByIds(obj).then((res) => {
               console.log(res);
               this.$message({
                 type: "success",
@@ -238,7 +298,7 @@ export default {
     eidt(res) {
       console.log(res);
       this.$router.push({
-        path: "/platform/blogroll/edit",
+        path: "/platform/subject/edit",
         query: {
           id: res.id,
         },
@@ -256,7 +316,7 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delFriendLinkById(obj).then((res) => {
+          delArticlesById(obj).then((res) => {
             // //console.log(res);
             this.$message({
               type: "success",
@@ -281,7 +341,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/platform/blogroll/add" });
+      this.$router.push({ path: "/platform/subject/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -293,7 +353,7 @@ export default {
       limit: this.limit,
       page: this.page,
     };
-    findallFriendLinks(obj).then((res) => {
+    findAllArticles(obj).then((res) => {
       console.log(res);
       this.tableData = res.data;
       this.pages = res.count;

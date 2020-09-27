@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">友情链接</p>
+    <p class="table_title">链商学院</p>
     <!-- 搜索列表 -->
     <div class="userList_content">
       <!-- 用户信息列表 -->
@@ -15,18 +15,6 @@
             icon="el-icon-plus"
             >增加</el-button
           >
-          <el-button
-            type="warning"
-            size="large"
-            style="
-              background-color: #ff5722;
-              border: none;
-              border-radius: 2px;
-              margin-right: 10px;
-            "
-            @click="frozen"
-            >批量删除</el-button
-          >
         </div>
         <el-table
           ref="multipleTable"
@@ -34,15 +22,14 @@
           tooltip-effect="dark"
           style="width:100% overflow:scroll"
           class="userList_table"
-          @selection-change="handleSelectionChange"
         >
           <el-table-column
+            type="index"
             align="center"
-            type="selection"
-            width="55"
+            label="序号"
+            width="50"
           ></el-table-column>
-
-          <el-table-column align="center" label="图片" width="80">
+          <el-table-column align="center" label="封面" width="80">
             <!--加入下面的内容,scope.row代表这一行,img是显示这一行的哪个字段,我的是img,你的自己看下-->
             <template slot-scope="scope" class="headImage">
               <img
@@ -55,28 +42,36 @@
           </el-table-column>
 
           <el-table-column
-            align="center"
-            prop="name"
+            align="left"
+            prop="title"
             label="标题"
+            width="300"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="author"
+            label="作者"
             width="180"
             :show-overflow-tooltip="true"
           ></el-table-column>
           <el-table-column
             align="center"
-            prop="sort"
-            label="排序"
-            width="80"
+            prop="name"
+            label="分类"
+            width="150"
           ></el-table-column>
           <el-table-column
-            align="center"
-            prop="url"
-            label="链接地址"
+            align="left"
+            prop="introduct"
+            label="简介"
+            :show-overflow-tooltip="true"
           ></el-table-column>
 
           <el-table-column
             align="center"
             prop="createTime"
-            label="加入时间"
+            label="创建时间"
             fixed="right"
             width="180px"
           ></el-table-column>
@@ -135,9 +130,8 @@
 import axios from "axios";
 import { TimeSelect } from "element-ui";
 import {
-  findallFriendLinks,
-  delfriendLinkByIds,
-  delFriendLinkById,
+  findAllCollegeActicles,
+  delArticlesById,
 } from "../../../network/platform";
 export default {
   components: {},
@@ -149,6 +143,7 @@ export default {
       multipleSelection: [],
       page: 1,
       limit: 10,
+      editForm: {},
       labelPosition: "left",
       edit: false,
       index: "",
@@ -160,7 +155,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findAllCollegeActicles(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -171,7 +166,7 @@ export default {
         limit: this.limit,
         page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
+      findAllCollegeActicles(obj).then((res) => {
         console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
@@ -182,10 +177,11 @@ export default {
     // 获取列表
     getList() {
       let obj = {
-        parentId: 0,
+        limit: this.limit,
+        page: this.page,
       };
-      findallFriendLinks(obj).then((res) => {
-        //console.log(res);
+      findAllCollegeActicles(obj).then((res) => {
+        console.log(res);
         this.tableData = res.data;
         this.pages = res.count;
       });
@@ -195,50 +191,11 @@ export default {
       this.multipleSelection = val;
       console.log(this.multipleSelection);
     },
-    // 批量删除事件
-    frozen() {
-      if (this.multipleSelection.length != 0) {
-        this.$confirm("确认批量删除？", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
-            let ids = [];
-            for (let item in this.multipleSelection) {
-              ids.push(this.multipleSelection[item].id);
-            }
-            ids = "(" + ids.toString() + ")";
-            console.log(ids);
-            let obj = this.$qs.stringify({
-              ids: ids,
-              status: 1,
-            });
-
-            delfriendLinkByIds(obj).then((res) => {
-              console.log(res);
-              this.$message({
-                type: "success",
-                message: res.msg,
-              });
-              this.getList();
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "取消操作",
-            });
-          });
-      } else {
-        return;
-      }
-    },
     // 点击编辑事件
     eidt(res) {
       console.log(res);
       this.$router.push({
-        path: "/platform/blogroll/edit",
+        path: "/platform/school/edit",
         query: {
           id: res.id,
         },
@@ -256,7 +213,7 @@ export default {
           let obj = this.$qs.stringify({
             id: res.id,
           });
-          delFriendLinkById(obj).then((res) => {
+          delArticlesById(obj).then((res) => {
             // //console.log(res);
             this.$message({
               type: "success",
@@ -281,7 +238,7 @@ export default {
       this.page = val;
     },
     gotoAdd() {
-      this.$router.push({ path: "/platform/blogroll/add" });
+      this.$router.push({ path: "/platform/school/add" });
     },
     gotoCredits(res) {
       // this.$router.push({ path: "/credits", query: { uId: res.uId } });
@@ -293,7 +250,7 @@ export default {
       limit: this.limit,
       page: this.page,
     };
-    findallFriendLinks(obj).then((res) => {
+    findAllCollegeActicles(obj).then((res) => {
       console.log(res);
       this.tableData = res.data;
       this.pages = res.count;

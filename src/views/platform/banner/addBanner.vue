@@ -1,7 +1,7 @@
 <template>
   <div class="user-list">
     <!-- 添加按钮 -->
-    <p class="table_title">添加商品标签</p>
+    <p class="table_title">添加轮播</p>
     <!-- 搜索列表 -->
     <div class="addTaxonomy">
       <!-- 编辑用户信息列表 -->

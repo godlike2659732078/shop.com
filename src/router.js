@@ -148,6 +148,30 @@ const blogroll_add = () =>
     import('./views/platform/blogroll/addblogroll.vue')
 const blogroll_edit = () =>
     import('./views/platform/blogroll/edit.vue')
+const subject = () =>
+    import('./views/platform/subject/index')
+const subject_add = () =>
+    import('./views/platform/subject/addSubject.vue')
+const subject_edit = () =>
+    import('./views/platform/subject/edit.vue')
+const advertising = () =>
+    import('./views/platform/advertising/index')
+const advertising_add = () =>
+    import('./views/platform/advertising/addAdvertising.vue')
+const advertising_edit = () =>
+    import('./views/platform/advertising/edit.vue')
+const rule = () =>
+    import('./views/platform/rule/index')
+const rule_edit = () =>
+    import('./views/platform/rule/edit')
+import('./views/platform/advertising/edit.vue')
+const school = () =>
+    import('./views/platform/school/index')
+const school_add = () =>
+    import('./views/platform/school/addSchool.vue')
+const school_edit = () =>
+    import('./views/platform/school/edit')
+
 
 
 
@@ -754,6 +778,96 @@ export default new Router({
                 },
                 component: blogroll_edit
             },
+            {
+                path: '/platform/subject',
+                name: 'subject',
+                meta: {
+                    title: "消息公告"
+                },
+                component: subject
+            },
+            {
+                path: '/platform/subject/add',
+                name: 'subject_add',
+                meta: {
+                    title: "添加消息公告"
+                },
+                component: subject_add
+            },
+            {
+                path: '/platform/subject/edit',
+                name: 'subject_edit',
+                meta: {
+
+                },
+                component: subject_edit
+            },
+            {
+                path: '/platform/advertising',
+                name: 'advertising',
+                meta: {
+                    title: "广告管理"
+                },
+                component: advertising
+            },
+            {
+                path: '/platform/advertising/add',
+                name: 'advertising_add',
+                meta: {
+                    title: "添加广告"
+                },
+                component: advertising_add
+            },
+            {
+                path: '/platform/advertising/edit',
+                name: 'advertising_edit',
+                meta: {
+
+                },
+                component: advertising_edit
+            },
+            {
+                path: '/platform/rule',
+                name: 'rule',
+                meta: {
+                    title: "平台规则"
+                },
+                component: rule
+            },
+            {
+                path: '/platform/rule/edit',
+                name: 'rule_edit',
+
+                component: rule_edit
+            },
+            {
+                path: '/platform/school',
+                name: 'school',
+                meta: {
+                    title: "链商学院"
+                },
+                component: school
+            },
+            {
+                path: '/platform/school/add',
+                name: 'school_add',
+                meta: {
+                    title: "添加"
+                },
+                component: school_add
+            },
+            {
+                path: '/platform/school/edit',
+                name: 'school_edit',
+                meta: {
+
+                },
+                component: school_edit
+            },
+
+
+
+
 
 
 
